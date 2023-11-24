@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34316.72
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Beep.DeveloperAssistant.Logic", "..\Beep.DeveloperAssistant.Logic\Beep.DeveloperAssistant.Logic.csproj", "{E5D22710-013C-4D17-AF67-2F1459A77435}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Beep.DeveloperAssistant.Nodes", "..\Beep.DeveloperAssistant.Nodes\Beep.DeveloperAssistant.Nodes.csproj", "{FDB1B8B2-02C2-432E-B5DC-2FCFB78732ED}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Beep.DeveloperAssistant.WinformCore", "..\Beep.DeveloperAssistant.WinformCore\Beep.DeveloperAssistant.WinformCore.csproj", "{F92FF228-8933-4E92-8D69-6BF0A0EB11F1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E5D22710-013C-4D17-AF67-2F1459A77435}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5D22710-013C-4D17-AF67-2F1459A77435}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5D22710-013C-4D17-AF67-2F1459A77435}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5D22710-013C-4D17-AF67-2F1459A77435}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FDB1B8B2-02C2-432E-B5DC-2FCFB78732ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDB1B8B2-02C2-432E-B5DC-2FCFB78732ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDB1B8B2-02C2-432E-B5DC-2FCFB78732ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDB1B8B2-02C2-432E-B5DC-2FCFB78732ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F92FF228-8933-4E92-8D69-6BF0A0EB11F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F92FF228-8933-4E92-8D69-6BF0A0EB11F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F92FF228-8933-4E92-8D69-6BF0A0EB11F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F92FF228-8933-4E92-8D69-6BF0A0EB11F1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D1B346F3-CC72-46C6-B656-A95A8EA5F8F9}
+	EndGlobalSection
+EndGlobal
