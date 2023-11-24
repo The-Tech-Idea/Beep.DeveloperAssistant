@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
 
-namespace Beep.CSVManager
+namespace Beep.CSV.Logic
 {
     public class FileDefinition
     {

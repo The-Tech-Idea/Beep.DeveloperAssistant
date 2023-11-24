@@ -8,7 +8,7 @@ using System.Threading;
 using TheTechIdea;
 using TheTechIdea.Beep;
 
-namespace Beep.CSVManager
+namespace Beep.CSV.Logic
 {
     public class ReadCSV
     {
