@@ -75,7 +75,7 @@ namespace Beep.DeveloperAssistant.Logic
                                                 IBranch br = ExtensionsHelpers.TreeEditor.treeBranchHandler.GetBranch(item);
 
                                                 //         TreeEditor.AddCommentsWaiting($"{i} - Added {br.BranchText} to {Passedarguments.DatasourceName}");
-                                                EntityStructure ent = ExtensionsHelpers.DataSource.GetEntityStructure(br.BranchText, true);
+                                                EntityStructure ent = ExtensionsHelpers.DataSource.GetEntityStructure(br.BranchText, false);
 
                                                 DMEEditor.classCreator.CreateINotifyClass(ent,ent.EntityName,"","", Path.Combine(DMEEditor.ConfigEditor.Config.ScriptsPath, Passedarguments.DatasourceName));
                                                 i += 1;
@@ -165,7 +165,7 @@ namespace Beep.DeveloperAssistant.Logic
                                                 ExtensionsHelpers.Vismanager.PasstoWaitForm(args);
                                                 if (!ExtensionsHelpers.DataSource.Entities.Where(p => p.EntityName.Equals(br.BranchText, StringComparison.OrdinalIgnoreCase)).Any())
                                                 {
-                                                    entity = (EntityStructure)srcds.GetEntityStructure(br.BranchText, true).Clone();
+                                                    entity = (EntityStructure)srcds.GetEntityStructure(br.BranchText, false).Clone();
                                                 }
                                                 else
                                                 {
@@ -277,7 +277,7 @@ namespace Beep.DeveloperAssistant.Logic
                                                 //    DMEEditor.AddLogMessage("Beep", args.ParameterString1, DateTime.Now, 0, Passedarguments.DatasourceName, Errors.Ok);
                                                 if (!ExtensionsHelpers.DataSource.Entities.Where(p => p.EntityName.Equals(br.BranchText, StringComparison.OrdinalIgnoreCase)).Any())
                                                 {
-                                                    entity = (EntityStructure)srcds.GetEntityStructure(br.BranchText, true).Clone();
+                                                    entity = (EntityStructure)srcds.GetEntityStructure(br.BranchText, false).Clone();
                                                 }
                                                 else
                                                 {
