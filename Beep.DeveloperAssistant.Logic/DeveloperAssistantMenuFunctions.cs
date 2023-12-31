@@ -1,15 +1,9 @@
-﻿
-using System.CodeDom.Compiler;
-
-using System.Text.RegularExpressions;
-
+﻿using System.Text.RegularExpressions;
 using Beep.DeveloperAssistant.Logic.Models;
 using BeepEnterprize.Vis.Module;
-
 using TheTechIdea;
 using TheTechIdea.Beep;
 using TheTechIdea.Beep.Addin;
-
 using TheTechIdea.Beep.DataBase;
 using TheTechIdea.Beep.Vis;
 using TheTechIdea.Util;
@@ -57,8 +51,8 @@ namespace Beep.DeveloperAssistant.Logic
                                 args.ParameterString1 = $"Creating POCO Entities Files for {Passedarguments.DatasourceName} ";
                                 ExtensionsHelpers.Vismanager.ShowWaitForm(args);
                                 int i = 0;
-                                //    TreeEditor.ShowWaiting();
-                                //    TreeEditor.ChangeWaitingCaption($"Creating POCO Entities for total:{DataSource.EntitiesNames.Count}");
+                                args.Messege = $"Creating POCO Entities for total:{ExtensionsHelpers.TreeEditor.SelectedBranchs.Count}";
+                                ExtensionsHelpers.Vismanager.PasstoWaitForm(args);
                                 try
                                 {
                                     if (!Directory.Exists(Path.Combine(DMEEditor.ConfigEditor.Config.ScriptsPath, Passedarguments.DatasourceName)))
@@ -70,13 +64,14 @@ namespace Beep.DeveloperAssistant.Logic
                                         {
                                             foreach (int item in ExtensionsHelpers.TreeEditor.SelectedBranchs)
                                             {
-                                                args.ParameterString1 = $"Addin Entity  {item} ";
+                                                args.Messege = $"Fetching  Entity  {item} Structure ..";
                                                 ExtensionsHelpers.Vismanager.PasstoWaitForm(args);
                                                 IBranch br = ExtensionsHelpers.TreeEditor.treeBranchHandler.GetBranch(item);
 
                                                 //         TreeEditor.AddCommentsWaiting($"{i} - Added {br.BranchText} to {Passedarguments.DatasourceName}");
                                                 EntityStructure ent = ExtensionsHelpers.DataSource.GetEntityStructure(br.BranchText, true);
-
+                                                args.Messege = $"Getting  Entity  {item} Inotify Class ..";
+                                                ExtensionsHelpers.Vismanager.PasstoWaitForm(args);
                                                 DMEEditor.classCreator.CreateINotifyClass(ent,ent.EntityName,"","", Path.Combine(DMEEditor.ConfigEditor.Config.ScriptsPath, Passedarguments.DatasourceName));
                                                 i += 1;
                                             }
@@ -138,18 +133,19 @@ namespace Beep.DeveloperAssistant.Logic
                         {
                             if (ExtensionsHelpers.Vismanager.Controlmanager.InputBoxYesNo("Beep DM", "Are you sure, this might take some time?") == BeepEnterprize.Vis.Module.DialogResult.Yes)
                             {
-
+                                PassedArgs args = new PassedArgs();
+                                args.ParameterString1 = $"Creating POCO Entities Files for {Passedarguments.DatasourceName} ";
+                                ExtensionsHelpers.Vismanager.ShowWaitForm(args);
                                 int i = 0;
-                                //    TreeEditor.ShowWaiting();
-                                
-                                //   TreeEditor.ChangeWaitingCaption($"Creating POCO Entities for total:{DataSource.EntitiesNames.Count}");
+                                args.Messege = $"Creating POCO Entities for total:{ExtensionsHelpers.TreeEditor.SelectedBranchs.Count}";
+                                ExtensionsHelpers.Vismanager.PasstoWaitForm(args);
                                 try
                                 {
                                     if (!Directory.Exists(Path.Combine(DMEEditor.ConfigEditor.Config.ScriptsPath, Passedarguments.DatasourceName)))
                                     {
                                         Directory.CreateDirectory(Path.Combine(DMEEditor.ConfigEditor.Config.ScriptsPath, Passedarguments.DatasourceName));
                                     };
-                                    PassedArgs args = new PassedArgs();
+                                   
                                     args.ParameterString1 = $"Creating DLL for POCO Entities  {Passedarguments.DatasourceName} ";
                                     ExtensionsHelpers.Vismanager.ShowWaitForm(args);
                                     foreach (int item in ExtensionsHelpers.TreeEditor.SelectedBranchs)
@@ -161,7 +157,7 @@ namespace Beep.DeveloperAssistant.Logic
                                         {
                                             if (srcds.DatasourceName == Passedarguments.DatasourceName)
                                             {
-                                                args.ParameterString1 = $"Addin Entity  {br.BranchText} ";
+                                                args.Messege = $"Fetching  Entity  {item} Structure ..";
                                                 ExtensionsHelpers.Vismanager.PasstoWaitForm(args);
                                                 if (!ExtensionsHelpers.DataSource.Entities.Where(p => p.EntityName.Equals(br.BranchText, StringComparison.OrdinalIgnoreCase)).Any())
                                                 {
@@ -258,9 +254,11 @@ namespace Beep.DeveloperAssistant.Logic
                                         Directory.CreateDirectory(Path.Combine(DMEEditor.ConfigEditor.Config.ScriptsPath, Passedarguments.DatasourceName));
                                     };
                                     PassedArgs args = new PassedArgs();
-                                    args.ParameterString1 = $"Creating DLL for POCO Entities  {Passedarguments.DatasourceName} ";
-                                    //  ExtensionsHelpers.Vismanager.ShowWaitForm(args);
-                                    //ExtensionsHelpers.progress.Report(args);
+                                    args.ParameterString1 = $"Creating  Entities Files for {Passedarguments.DatasourceName} ";
+                                    ExtensionsHelpers.Vismanager.ShowWaitForm(args);
+                                 
+                                    args.Messege = $"Creating  Entities for total:{ExtensionsHelpers.TreeEditor.SelectedBranchs.Count}";
+                                    ExtensionsHelpers.Vismanager.PasstoWaitForm(args);
                                     ExtensionsHelpers.AddLogMessage("Beep", args.ParameterString1, DateTime.Now, 0, Passedarguments.DatasourceName, Errors.Ok);
                                     foreach (int item in ExtensionsHelpers.TreeEditor.SelectedBranchs)
                                     {
@@ -271,10 +269,8 @@ namespace Beep.DeveloperAssistant.Logic
                                         {
                                             if (srcds.DatasourceName == Passedarguments.DatasourceName)
                                             {
-                                                args.Messege = $"Addin Entity  {br.BranchText} ";
-                                                // ExtensionsHelpers.Vismanager.PasstoWaitForm(args);
-                                                ExtensionsHelpers.progress.Report(args);
-                                                //    DMEEditor.AddLogMessage("Beep", args.ParameterString1, DateTime.Now, 0, Passedarguments.DatasourceName, Errors.Ok);
+                                                args.Messege = $"Fetching  Entity  {item} Structure ..";
+                                                ExtensionsHelpers.Vismanager.PasstoWaitForm(args);
                                                 if (!ExtensionsHelpers.DataSource.Entities.Where(p => p.EntityName.Equals(br.BranchText, StringComparison.OrdinalIgnoreCase)).Any())
                                                 {
                                                     entity = (EntityStructure)srcds.GetEntityStructure(br.BranchText, true).Clone();
@@ -292,7 +288,7 @@ namespace Beep.DeveloperAssistant.Logic
                                     }
                                     string templatename = string.Empty;
                                     string ret = "ok";
-                                    //Control t = (Control)TreeEditor.TreeStrucure;
+                                    ExtensionsHelpers.Vismanager.CloseWaitForm();
                                     if (ls.Count > 0)
                                     {
                                         if (manager.Templates.Count > 0)
@@ -316,13 +312,13 @@ namespace Beep.DeveloperAssistant.Logic
                                         }else DMEEditor.AddLogMessage("Failed", $"Could not find any templates", DateTime.Now, 0, Passedarguments.DatasourceName, Errors.Failed);
                                     }
                                     
-                                    //ExtensionsHelpers.Vismanager.CloseWaitForm();
+                                    ExtensionsHelpers.Vismanager.CloseWaitForm();
                                 }
                                 catch (Exception ex1)
                                 {
 
                                     ExtensionsHelpers.AddLogMessage("Fail", $"Could not Create Directory or error in Generating DLL {ex1.Message}", DateTime.Now, 0, Passedarguments.DatasourceName, Errors.Failed);
-                                   // ExtensionsHelpers.Vismanager.CloseWaitForm();
+                                   ExtensionsHelpers.Vismanager.CloseWaitForm();
                                 }
 
                                 //  TreeEditor.HideWaiting();
@@ -373,9 +369,9 @@ namespace Beep.DeveloperAssistant.Logic
                         {
 
                             PassedArgs args = new PassedArgs();
-                            args.ParameterString1 = $"Creating Entity Classes  {Passedarguments.DatasourceName} ";
-                            //  ExtensionsHelpers.Vismanager.ShowWaitForm(args);
-                            //ExtensionsHelpers.progress.Report(args);
+                            args.Messege = $"Creating Entity Classes for  {ExtensionsHelpers.TreeEditor.SelectedBranchs.Count()} Table";
+                            ExtensionsHelpers.Vismanager.ShowWaitForm(args);
+                            ExtensionsHelpers.progress.Report(args);
                             ExtensionsHelpers.AddLogMessage("Beep", args.ParameterString1, DateTime.Now, 0, Passedarguments.DatasourceName, Errors.Ok);
                             foreach (int item in ExtensionsHelpers.TreeEditor.SelectedBranchs)
                             {
@@ -384,11 +380,11 @@ namespace Beep.DeveloperAssistant.Logic
 
                                 if (srcds != null)
                                 {
-                                      args.Messege = $"Addin Entity  {br.BranchText} ";
-                                        // ExtensionsHelpers.Vismanager.PasstoWaitForm(args);
-                                        ExtensionsHelpers.progress.Report(args);
-                                        //    DMEEditor.AddLogMessage("Beep", args.ParameterString1, DateTime.Now, 0, Passedarguments.DatasourceName, Errors.Ok);
-                                            entity = (EntityStructure)srcds.GetEntityStructure(br.BranchText, true).Clone();
+                                      args.Messege = $"Getting Structure for  Entity  {br.BranchText} ";
+                                      ExtensionsHelpers.Vismanager.PasstoWaitForm(args);
+                                      ExtensionsHelpers.progress.Report(args);
+                                      DMEEditor.AddLogMessage("Beep", args.Messege, DateTime.Now, 0, Passedarguments.DatasourceName, Errors.Ok);
+                                       entity = (EntityStructure)srcds.GetEntityStructure(br.BranchText, true).Clone();
                                         //     TreeEditor.AddCommentsWaiting($"{i}- Added Entity {entity.EntityName}");
                                         ls.Add(entity);
                                         i++;
@@ -398,7 +394,8 @@ namespace Beep.DeveloperAssistant.Logic
                             }
                             string templatename = string.Empty;
                             string ret = "ok";
-                            //Control t = (Control)TreeEditor.TreeStrucure;
+
+                            ExtensionsHelpers.Vismanager.CloseWaitForm();
                             if (ls.Count > 0)
                             {
                                 string classnamespases = string.Empty;
@@ -429,13 +426,13 @@ namespace Beep.DeveloperAssistant.Logic
                                 manager.CreateEntities(filepath, ls, classnamespases);
                             }
 
-                            //ExtensionsHelpers.Vismanager.CloseWaitForm();
+                           
                         }
                         catch (Exception ex1)
                         {
 
                             ExtensionsHelpers.AddLogMessage("Fail", $"Could not Create Directory or error in Generating DLL {ex1.Message}", DateTime.Now, 0, Passedarguments.DatasourceName, Errors.Failed);
-                            // ExtensionsHelpers.Vismanager.CloseWaitForm();
+                             ExtensionsHelpers.Vismanager.CloseWaitForm();
                         }
 
                         //  TreeEditor.HideWaiting();
