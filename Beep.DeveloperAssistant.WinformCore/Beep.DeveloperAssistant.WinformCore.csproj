@@ -2,7 +2,7 @@
 
 
 	<PropertyGroup>
-		<TargetFrameworks>net6.0-windows;net7.0-windows;net8.0-windows</TargetFrameworks>
+		<TargetFrameworks>net7.0-windows;net8.0-windows</TargetFrameworks>
 		<Nullable>enable</Nullable>
 		<UseWindowsForms>true</UseWindowsForms>
 		<ImplicitUsings>enable</ImplicitUsings>
@@ -32,8 +32,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="TheTechIdea.Beep.DataManagementEngine" Version="1.0.350" />
-		<PackageReference Include="TheTechIdea.Beep.DataManagementModels" Version="1.0.119" />
+		<PackageReference Include="TheTechIdea.Beep.DataManagementEngine" Version="1.0.353" />
+		<PackageReference Include="TheTechIdea.Beep.DataManagementModels" Version="1.0.120" />
 		<PackageReference Include="TheTechIdea.Beep.Vis.Modules" Version="1.0.83" />
 	</ItemGroup>
 	<ItemGroup>
