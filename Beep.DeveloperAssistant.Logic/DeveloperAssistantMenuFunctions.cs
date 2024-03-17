@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using Beep.DeveloperAssistant.Logic.Models;
-using BeepEnterprize.Vis.Module;
+using Beep.Vis.Module;
 using TheTechIdea;
 using TheTechIdea.Beep;
 using TheTechIdea.Beep.Addin;
@@ -45,7 +45,7 @@ namespace Beep.DeveloperAssistant.Logic
 
                         if (ExtensionsHelpers.DataSource.ConnectionStatus == System.Data.ConnectionState.Open)
                         {
-                            if (ExtensionsHelpers.Vismanager.Controlmanager.InputBoxYesNo("Beep DM", "Are you sure, this might take some time?") == BeepEnterprize.Vis.Module.DialogResult.Yes)
+                            if (ExtensionsHelpers.Vismanager.Controlmanager.InputBoxYesNo("Beep DM", "Are you sure, this might take some time?") == Beep.Vis.Module.DialogResult.Yes)
                             {
                                 PassedArgs args = new PassedArgs();
                                 args.ParameterString1 = $"Creating POCO Entities Files for {Passedarguments.DatasourceName} ";
@@ -131,7 +131,7 @@ namespace Beep.DeveloperAssistant.Logic
 
                         if (ExtensionsHelpers.DataSource.ConnectionStatus == System.Data.ConnectionState.Open)
                         {
-                            if (ExtensionsHelpers.Vismanager.Controlmanager.InputBoxYesNo("Beep DM", "Are you sure, this might take some time?") == BeepEnterprize.Vis.Module.DialogResult.Yes)
+                            if (ExtensionsHelpers.Vismanager.Controlmanager.InputBoxYesNo("Beep DM", "Are you sure, this might take some time?") == Beep.Vis.Module.DialogResult.Yes)
                             {
                                 PassedArgs args = new PassedArgs();
                                 args.ParameterString1 = $"Creating POCO Entities Files for {Passedarguments.DatasourceName} ";
@@ -240,7 +240,7 @@ namespace Beep.DeveloperAssistant.Logic
 
                         if (ExtensionsHelpers.DataSource.ConnectionStatus == System.Data.ConnectionState.Open)
                         {
-                            if (ExtensionsHelpers.Vismanager.Controlmanager.InputBoxYesNo("Beep DM", "Are you sure, this might take some time?") == BeepEnterprize.Vis.Module.DialogResult.Yes)
+                            if (ExtensionsHelpers.Vismanager.Controlmanager.InputBoxYesNo("Beep DM", "Are you sure, this might take some time?") == Beep.Vis.Module.DialogResult.Yes)
                             {
 
                                 int i = 0;
@@ -358,7 +358,7 @@ namespace Beep.DeveloperAssistant.Logic
                 if (ExtensionsHelpers.pbr.BranchType == EnumPointType.DataPoint)
                 {
 
-                    if (ExtensionsHelpers.Vismanager.Controlmanager.InputBoxYesNo("Beep DM", "Are you sure, this might take some time?") == BeepEnterprize.Vis.Module.DialogResult.Yes)
+                    if (ExtensionsHelpers.Vismanager.Controlmanager.InputBoxYesNo("Beep DM", "Are you sure, this might take some time?") == Beep.Vis.Module.DialogResult.Yes)
                     {
 
                         int i = 0;
@@ -399,7 +399,7 @@ namespace Beep.DeveloperAssistant.Logic
                             if (ls.Count > 0)
                             {
                                 string classnamespases = string.Empty;
-                                if (ExtensionsHelpers.Vismanager.Controlmanager.InputBox("Beep", "Enter NameSpace you like:", ref classnamespases) == BeepEnterprize.Vis.Module.DialogResult.OK)
+                                if (ExtensionsHelpers.Vismanager.Controlmanager.InputBox("Beep", "Enter NameSpace you like:", ref classnamespases) == Beep.Vis.Module.DialogResult.OK)
                                 {
                                     if (string.IsNullOrEmpty(classnamespases))
                                     {

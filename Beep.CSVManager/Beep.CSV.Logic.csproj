@@ -13,6 +13,7 @@
 		<PackageIcon>SimpleODM.png</PackageIcon>
 		<RepositoryUrl>https://github.com/The-Tech-Idea/</RepositoryUrl>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<Version>1.0.1</Version>
 	</PropertyGroup>
 	<ItemGroup>
 	  <Compile Remove="obj\**" />
