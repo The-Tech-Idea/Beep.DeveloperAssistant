@@ -34,7 +34,7 @@
 	<ItemGroup>
 		<PackageReference Include="TheTechIdea.Beep.DataManagementEngine" Version="1.0.360" />
 		<PackageReference Include="TheTechIdea.Beep.DataManagementModels" Version="1.0.124" />
-		<PackageReference Include="TheTechIdea.Beep.Vis.Modules" Version="1.0.90" />
+		<PackageReference Include="TheTechIdea.Beep.Vis.Modules" Version="1.0.92" />
 	</ItemGroup>
 	<ItemGroup>
 		<None Include="..\..\InstallationScripts\LogoGFx\128\SimpleODM.png">
