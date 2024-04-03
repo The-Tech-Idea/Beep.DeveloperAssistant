@@ -45,7 +45,7 @@ namespace Beep.IDE.Nodes
         public int ParentBranchID { get; set; }
         public string BranchDescription { get; set; }
         public string BranchClass { get; set; } = "DEV";
-        public object ParentBranch { get; set; }
+         public IBranch ParentBranch { get  ; set  ; }
         public string ObjectType { get; set; } = "Beep.DEV.GEN";
         public IBranch CreateCategoryNode(CategoryFolder p)
         {
