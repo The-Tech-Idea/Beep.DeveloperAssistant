@@ -10,7 +10,7 @@ using TheTechIdea.Util;
 
 namespace Beep.DeveloperAssistant.Logic
 {
-    [AddinAttribute(Caption = "Developer Assistant", Name = "DeveloperAssistantMenuFunctions", menu = "Beep", misc = "DeveloperAssistantMenuFunctions", ObjectType ="Beep",addinType = AddinType.Class, iconimage = "dev.png",order =4)]
+    [AddinAttribute(Caption = "Developer Assistant", Name = "DeveloperAssistantMenuFunctions", menu = "Beep", misc = "DeveloperAssistantMenuFunctions", ObjectType ="Beep",addinType = AddinType.Class, iconimage = "dev.png",order = 4 ,Showin = ShowinType.Menu)]
     public class DeveloperAssistantMenuFunctions : IFunctionExtension
     {
         public IDMEEditor DMEEditor { get; set; }
@@ -27,7 +27,7 @@ namespace Beep.DeveloperAssistant.Logic
         }
        
 
-        [CommandAttribute(Caption = "Create POCO Classes", Name = "createpoco", Click = true, iconimage = "createpoco.png", ObjectType = "Beep", PointType = EnumPointType.DataPoint)]
+        [CommandAttribute(Caption = "Create POCO Classes", Name = "createpoco", Click = true, iconimage = "createpoco.png", ObjectType = "Beep", PointType = EnumPointType.DataPoint, Showin = ShowinType.Menu)]
         public IErrorsInfo CreatePOCOlasses(IPassedArgs Passedarguments)
         {
             DMEEditor.ErrorObject.Flag = Errors.Ok;
@@ -112,7 +112,7 @@ namespace Beep.DeveloperAssistant.Logic
             return DMEEditor.ErrorObject;
 
         }
-        [CommandAttribute(Caption = "Create POCO DLL ", Name = "createdll", Click = true, ObjectType = "Beep", iconimage = "createdll.png", PointType = EnumPointType.DataPoint)]
+        [CommandAttribute(Caption = "Create POCO DLL ", Name = "createdll", Click = true, ObjectType = "Beep", iconimage = "createdll.png", PointType = EnumPointType.DataPoint, Showin = ShowinType.Menu)]
         public IErrorsInfo CreateDLLclasses(IPassedArgs Passedarguments)
         {
             DMEEditor.ErrorObject.Flag = Errors.Ok;
@@ -220,7 +220,7 @@ namespace Beep.DeveloperAssistant.Logic
             return DMEEditor.ErrorObject;
 
         }
-        [CommandAttribute(Caption = "Create Template DLL ", Name = "createtemplatedll", Click = true, ObjectType = "Beep", iconimage = "createtemplatedll.png", PointType = EnumPointType.DataPoint)]
+        [CommandAttribute(Caption = "Create Template DLL ", Name = "createtemplatedll", Click = true, ObjectType = "Beep", iconimage = "createtemplatedll.png", PointType = EnumPointType.DataPoint, Showin = ShowinType.Menu)]
         public IErrorsInfo CreateDLLFromTemplateclasses(IPassedArgs Passedarguments)
         {
             DMEEditor.ErrorObject.Flag = Errors.Ok;
@@ -342,7 +342,7 @@ namespace Beep.DeveloperAssistant.Logic
 
         }
 
-        [CommandAttribute(Caption = "Create Entity DLL ", Name = "createEntitydll", Click = true, ObjectType = "Beep", iconimage = "createEntitydll.png", PointType = EnumPointType.DataPoint)]
+        [CommandAttribute(Caption = "Create Entity DLL ", Name = "createEntitydll", Click = true, ObjectType = "Beep", iconimage = "createEntitydll.png", PointType = EnumPointType.DataPoint, Showin = ShowinType.Menu)]
         public IErrorsInfo CreateEntityclasses(IPassedArgs Passedarguments)
         {
             DMEEditor.ErrorObject.Flag = Errors.Ok;
@@ -452,7 +452,7 @@ namespace Beep.DeveloperAssistant.Logic
             return DMEEditor.ErrorObject;
 
         }
-        [CommandAttribute(Caption = "Code Converter", Name = "codeconverter", Click = true, ObjectType = "Beep", iconimage = "codeconverter.png", PointType = EnumPointType.DataPoint)]
+        [CommandAttribute(Caption = "Code Converter", Name = "codeconverter", Click = true, ObjectType = "Beep", iconimage = "codeconverter.png", PointType = EnumPointType.DataPoint, Showin = ShowinType.Menu)]
         public IErrorsInfo CodeConverter(IPassedArgs Passedarguments)
         {
             DMEEditor.ErrorObject.Flag = Errors.Ok;
