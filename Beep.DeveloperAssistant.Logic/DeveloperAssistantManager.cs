@@ -269,7 +269,7 @@ namespace Beep.DeveloperAssistant.Logic
             args.Messege = $"Finished Creating DLL {dllname}";
             progress.Report(args);
         }
-        public bool CompileCode(string filespath,List<string> sourceFiles,String exeFile,string referencedassemblies,bool FromStrings)
+        public bool CompileCode(string filespath,List<string> sourceFiles,string exeFile,string referencedassemblies,bool FromStrings)
         {
 
 
@@ -423,7 +423,27 @@ public {propertyType} {propertyName}
         }
         public string ConvertPOCOClassToEntity(string filepath,string classname,  EntityStructure entityStructure,string classnamespace)
         {
-            return  DMTypeBuilder.ConvertPOCOClassToEntity(DMEEditor, entityStructure, classnamespace);
+            if (entityStructure == null)
+            {
+                DMEEditor.AddLogMessage("Template Class Designer", "Error Entity is null", DateTime.Now, 0, null, Errors.Failed);
+                return null;
+            }
+            if (string.IsNullOrEmpty(classname))
+            {
+                DMEEditor.AddLogMessage("Template Class Designer", "Error Class Name is null", DateTime.Now, 0, null, Errors.Failed);
+                return null;
+            }
+            string retvqal=  DMTypeBuilder.ConvertPOCOClassToEntity(DMEEditor, entityStructure, classnamespace);
+            if (!string.IsNullOrEmpty(filepath))
+            {
+                string savepath = string.IsNullOrEmpty(filepath) ? DMEEditor.ConfigEditor.Config.ScriptsPath : filepath;
+                string file = Path.Combine(savepath, $"{classname}.cs");
+                StreamWriter streamWriter = new StreamWriter(file);
+                streamWriter.WriteLine(retvqal);
+                streamWriter.Close();
+            }
+            return retvqal;
+            
         }
         public void CreateEntities( string filepath, List<EntityStructure> entities, string classnamespace)
         {

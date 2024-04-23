@@ -27,6 +27,7 @@ namespace Beep.DeveloperAssistant.Logic
         public IBranch RootBranch { get; set; }
         public IBranch ParentBranch { get; set; }
         public IBranch ViewRootBranch { get; set; }
+        public IBranch DeveloperBranch { get; set; }
         public FunctionandExtensionsHelpers(IDMEEditor pdMEEditor, IVisManager pvisManager, ITree ptreeControl)
         {
             DMEEditor = pdMEEditor;
@@ -120,6 +121,7 @@ namespace Beep.DeveloperAssistant.Logic
 
 
             ViewRootBranch = TreeEditor.Branches[TreeEditor.Branches.FindIndex(x => x.BranchClass == "VIEW" && x.BranchType == EnumPointType.Root)];
+            DeveloperBranch = TreeEditor.Branches[TreeEditor.Branches.FindIndex(x => x.BranchClass == "DEV" && x.BranchType == EnumPointType.Root)];
         }
         public void AddLogMessage(string pLogType, string pLogMessage, DateTime pLogData, int pRecordID, string pMiscData, Errors pFlag)
         {
