@@ -78,15 +78,8 @@ namespace Beep.IDE.Nodes
             {
                 TreeEditor = pTreeEditor;
                 DMEEditor = pDMEEditor;
-                ParentBranchID = pParentNode.ID;
-                BranchText = pBranchText;
-                BranchType = pBranchType;
-                IconImageName = pimagename;
-
-                if (pID != 0)
-                {
-                    ID = pID;
-                }
+              
+             
 
                 //   DMEEditor.AddLogMessage("Success", "Set Config OK", DateTime.Now, 0, null, Errors.Ok);
             }
