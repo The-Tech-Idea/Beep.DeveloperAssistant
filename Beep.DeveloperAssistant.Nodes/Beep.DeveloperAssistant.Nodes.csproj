@@ -22,9 +22,11 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <None Remove="GFX\codegen.png" />
+	  <None Remove="GFX\pocotoentity.png" />
 	</ItemGroup>
 	<ItemGroup>
 	  <EmbeddedResource Include="GFX\codegen.png" />
+	  <EmbeddedResource Include="GFX\pocotoentity.png" />
 	</ItemGroup>
 	<ItemGroup>
 		<None Include="..\..\InstallationScripts\LogoGFx\128\SimpleODM.png">

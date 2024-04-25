@@ -7,15 +7,16 @@ using TheTechIdea.Beep.DataBase;
 using TheTechIdea.Beep.Vis;
 using TheTechIdea.Util;
 
-namespace Beep.IDE.Nodes
+
+namespace Beep.DeveloperAssistant.Nodes
 {
-    [AddinAttribute(Caption = "Code Generator",Name = "CodeGeneratorBranch", misc = "Beep", FileType = "Beep", iconimage = "codegen.png", menu = "DEV", ObjectType = "Beep.DEV.GEN")]
-    
-    public class CodeGeneratorBranch : IBranch
+    [AddinAttribute(Name = "POCOtoEntityCodeConverter", Caption = "POCO To Entity", misc = "Beep", FileType = "Beep", iconimage = "pocotoentity.png", menu = "DEV", ObjectType = "Beep.DEV.GEN")]
+   
+    public class POCOtoEntityCodeConverter : IBranch
     {
-        public CodeGeneratorBranch()
+        public POCOtoEntityCodeConverter()
         {
-            
+
         }
         public bool IsDataSourceNode { get; set; } = false;
         public string GuidID { get; set; } = Guid.NewGuid().ToString();
@@ -36,17 +37,17 @@ namespace Beep.IDE.Nodes
         public EntityStructure EntityStructure { get; set; }
         public int MiscID { get; set; }
         public string Name { get; set; }
-        public string BranchText { get; set; } = "Code Generator";
+        public string BranchText { get; set; } = "POCO To Entity";
         public int Level { get; set; }
         public EnumPointType BranchType { get; set; } = EnumPointType.Function;
         public int BranchID { get; set; }
-        public string IconImageName { get; set; } = "codegen.png";
+        public string IconImageName { get; set; } = "pocotoentity.png";
         public string BranchStatus { get; set; }
         public int ParentBranchID { get; set; }
         public string BranchDescription { get; set; }
         public string BranchClass { get; set; } = "DEV";
-         public IBranch ParentBranch { get  ; set  ; }
-        public string ObjectType { get; set; } = "Beep.DEV.GEN";
+        public IBranch ParentBranch { get; set; }
+        public string ObjectType { get; set; } = "Beep.DEV.POCOTOENTITY";
         public IBranch CreateCategoryNode(CategoryFolder p)
         {
             return null;
@@ -78,8 +79,8 @@ namespace Beep.IDE.Nodes
             {
                 TreeEditor = pTreeEditor;
                 DMEEditor = pDMEEditor;
-              
-             
+
+
 
                 //   DMEEditor.AddLogMessage("Success", "Set Config OK", DateTime.Now, 0, null, Errors.Ok);
             }
@@ -91,14 +92,14 @@ namespace Beep.IDE.Nodes
             return DMEEditor.ErrorObject;
         }
 
-        [CommandAttribute(Caption = "Open",Name= "OpenDeveloperTemplate", Hidden =false, iconimage = "codegen.png")]
-        public IErrorsInfo OpenDeveloperTemplate()
+        [CommandAttribute(Caption = "Open", Name = "openPocotoEntity", Hidden = false, iconimage = "pocotoentity.png")]
+        public IErrorsInfo openPocotoEntity()
         {
 
             try
             {
                 Console.WriteLine("Trying Open");
-                Visutil.ShowPage("uc_DeveloperAssistantTemplateDesigner", (PassedArgs)DMEEditor.Passedarguments, DisplayType.InControl);
+                Visutil.ShowPage("uc_CodeConverter", (PassedArgs)DMEEditor.Passedarguments, DisplayType.InControl);
 
                 //   DMEEditor.AddLogMessage("Success", "Added Database Connection", DateTime.Now, 0,null, Errors.Failed);
             }
