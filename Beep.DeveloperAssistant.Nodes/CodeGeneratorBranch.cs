@@ -17,6 +17,7 @@ namespace Beep.IDE.Nodes
         {
             
         }
+        public bool Visible { get; set; } = true;
         public bool IsDataSourceNode { get; set; } = false;
         public string GuidID { get; set; } = Guid.NewGuid().ToString();
         public string ParentGuidID { get; set; }

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
 		<ImplicitUsings>enable</ImplicitUsings>
@@ -43,6 +43,6 @@
 
 	<ItemGroup>
 	  <PackageReference Include="TheTechIdea.Beep.DataManagementModels" Version="1.0.169" />
-	  <PackageReference Include="TheTechIdea.Beep.Vis.Modules" Version="1.0.108" />
+	  <PackageReference Include="TheTechIdea.Beep.Vis.Modules" Version="1.0.109" />
 	</ItemGroup>
 </Project>
