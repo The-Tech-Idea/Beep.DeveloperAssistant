@@ -9,7 +9,7 @@ using TheTechIdea.Util;
 
 namespace Beep.IDE.Nodes
 {
-    [AddinAttribute(Caption = "Code Generator",Name = "CodeGeneratorBranch", misc = "Beep", FileType = "Beep", iconimage = "codegen.png", menu = "DEV", ObjectType = "Beep.DEV.GEN")]
+    [AddinAttribute(Caption = "Code Generator",Name = "CodeGeneratorBranch", misc = "Beep", FileType = "Beep", iconimage = "codegen.png", menu = "DEV", ObjectType = "Beep.DEV.GEN", ClassType = "LJ")]
     
     public class CodeGeneratorBranch : IBranch
     {

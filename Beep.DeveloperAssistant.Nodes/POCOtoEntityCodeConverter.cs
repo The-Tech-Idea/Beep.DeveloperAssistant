@@ -10,7 +10,7 @@ using TheTechIdea.Util;
 
 namespace Beep.DeveloperAssistant.Nodes
 {
-    [AddinAttribute(Name = "POCOtoEntityCodeConverter", Caption = "POCO To Entity", misc = "Beep", FileType = "Beep", iconimage = "pocotoentity.png", menu = "DEV", ObjectType = "Beep.DEV.GEN")]
+    [AddinAttribute(Name = "POCOtoEntityCodeConverter", Caption = "POCO To Entity", misc = "Beep", FileType = "Beep", iconimage = "pocotoentity.png", menu = "DEV", ObjectType = "Beep.DEV.GEN", ClassType = "LJ")]
    
     public class POCOtoEntityCodeConverter : IBranch
     {
