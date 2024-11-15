@@ -1,12 +1,14 @@
-﻿using Beep.Vis.Module;
-
-using TheTechIdea;
+﻿
 using TheTechIdea.Beep;
 using TheTechIdea.Beep.Addin;
 using TheTechIdea.Beep.DataBase;
 using TheTechIdea.Beep.Vis;
-using TheTechIdea.Util;
 
+using TheTechIdea.Beep.ConfigUtil;
+
+using TheTechIdea.Beep.Editor;
+
+using TheTechIdea.Beep.Vis.Modules;
 namespace Beep.IDE.Nodes
 {
     [AddinAttribute(Caption = "Code Generator",Name = "CodeGeneratorBranch", misc = "Beep", FileType = "Beep", iconimage = "codegen.png", menu = "DEV", ObjectType = "Beep.DEV.GEN", ClassType = "LJ")]

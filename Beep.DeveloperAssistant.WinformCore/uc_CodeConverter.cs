@@ -1,11 +1,17 @@
 ﻿using TheTechIdea.Beep.Vis;
-using Beep.Vis.Module;
+
 using Beep.DeveloperAssistant.Logic;
 using TheTechIdea.Beep;
-using TheTechIdea;
-using TheTechIdea.Logger;
-using TheTechIdea.Util;
+using TheTechIdea.Beep;
+using TheTechIdea.Beep.Addin;
+using TheTechIdea.Beep.ConfigUtil;
+using TheTechIdea.Beep.DriversConfigurations;
+using TheTechIdea.Beep.Editor;
+using TheTechIdea.Beep.Utilities;
+using TheTechIdea.Beep.Vis;
+using TheTechIdea.Beep.Vis.Modules;
 using TheTechIdea.Beep.DataBase;
+using TheTechIdea.Beep.Logger;
 
 namespace Beep.DeveloperAssistant.WinformCore
 {

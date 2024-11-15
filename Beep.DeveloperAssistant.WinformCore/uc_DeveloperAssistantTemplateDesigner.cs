@@ -1,12 +1,19 @@
 ﻿using Beep.DeveloperAssistant.Logic;
 using Beep.DeveloperAssistant.Logic.Models;
-using Beep.Vis.Module;
-using TheTechIdea;
+
 using TheTechIdea.Beep;
 using TheTechIdea.Beep.DataBase;
 using TheTechIdea.Beep.Vis;
-using TheTechIdea.Logger;
-using TheTechIdea.Util;
+using TheTechIdea.Beep.Addin;
+using TheTechIdea.Beep.ConfigUtil;
+using TheTechIdea.Beep.DriversConfigurations;
+using TheTechIdea.Beep.Editor;
+using TheTechIdea.Beep.Utilities;
+using TheTechIdea.Beep.Vis;
+using TheTechIdea.Beep.Vis.Modules;
+using TheTechIdea.Beep.DataBase;
+using TheTechIdea.Beep.Logger;
+using DialogResult = TheTechIdea.Beep.Vis.Modules.DialogResult;
 
 
 namespace Beep.DeveloperAssistant.Winform
@@ -87,7 +94,7 @@ namespace Beep.DeveloperAssistant.Winform
             string retval = string.Empty;
             string classnamespases=string.Empty;
             List<EntityStructure> entities = new List<EntityStructure>();
-            if (visManager.Controlmanager.InputBox("Beep", "Enter NameSpace you like:", ref classnamespases) == Beep.Vis.Module.DialogResult.OK)
+            if (visManager.Controlmanager.InputBox("Beep", "Enter NameSpace you like:", ref classnamespases) ==DialogResult.OK)
             {
                 if (string.IsNullOrEmpty(classnamespases))
                 {
@@ -96,7 +103,7 @@ namespace Beep.DeveloperAssistant.Winform
 
             }
             string filepath = string.Empty;
-            if (visManager.Controlmanager.InputBox("Beep", "Enter File Path you like to Save To (Leave blank to Save to Default Bin\\Entities Path ", ref filepath) == Beep.Vis.Module.DialogResult.OK)
+            if (visManager.Controlmanager.InputBox("Beep", "Enter File Path you like to Save To (Leave blank to Save to Default Bin\\Entities Path ", ref filepath) ==DialogResult.OK)
             {
                 if (string.IsNullOrEmpty(filepath))
                 {
@@ -137,7 +144,7 @@ namespace Beep.DeveloperAssistant.Winform
                 return;
             }
             string namespaeval = string.Empty;
-            if (visManager.Controlmanager.InputBox("Beep", "Enter NameSpace you like:", ref namespaeval) == Beep.Vis.Module.DialogResult.OK)
+            if (visManager.Controlmanager.InputBox("Beep", "Enter NameSpace you like:", ref namespaeval) ==DialogResult.OK)
             {
                 if (string.IsNullOrEmpty(namespaeval))
                 {

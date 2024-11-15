@@ -1,12 +1,17 @@
 ﻿using System.Text.RegularExpressions;
 using Beep.DeveloperAssistant.Logic.Models;
-using Beep.Vis.Module;
-using TheTechIdea;
 using TheTechIdea.Beep;
 using TheTechIdea.Beep.Addin;
-using TheTechIdea.Beep.DataBase;
+using TheTechIdea.Beep.ConfigUtil;
+using TheTechIdea.Beep.DriversConfigurations;
+using TheTechIdea.Beep.Editor;
+using TheTechIdea.Beep.Utilities;
 using TheTechIdea.Beep.Vis;
-using TheTechIdea.Util;
+using TheTechIdea.Beep.Vis.Modules;
+
+using TheTechIdea.Beep.DataBase;
+
+
 
 namespace Beep.DeveloperAssistant.Logic
 {
@@ -45,7 +50,7 @@ namespace Beep.DeveloperAssistant.Logic
 
                         if (ExtensionsHelpers.DataSource.ConnectionStatus == System.Data.ConnectionState.Open)
                         {
-                            if (ExtensionsHelpers.Vismanager.Controlmanager.InputBoxYesNo("Beep DM", "Are you sure, this might take some time?") == Beep.Vis.Module.DialogResult.Yes)
+                            if (ExtensionsHelpers.Vismanager.Controlmanager.InputBoxYesNo("Beep DM", "Are you sure, this might take some time?") ==DialogResult.Yes)
                             {
                                 PassedArgs args = new PassedArgs();
                                 args.ParameterString1 = $"Creating POCO Entities Files for {Passedarguments.DatasourceName} ";
@@ -131,7 +136,7 @@ namespace Beep.DeveloperAssistant.Logic
 
                         if (ExtensionsHelpers.DataSource.ConnectionStatus == System.Data.ConnectionState.Open)
                         {
-                            if (ExtensionsHelpers.Vismanager.Controlmanager.InputBoxYesNo("Beep DM", "Are you sure, this might take some time?") == Beep.Vis.Module.DialogResult.Yes)
+                            if (ExtensionsHelpers.Vismanager.Controlmanager.InputBoxYesNo("Beep DM", "Are you sure, this might take some time?") ==DialogResult.Yes)
                             {
                                 PassedArgs args = new PassedArgs();
                                 args.ParameterString1 = $"Creating POCO Entities Files for {Passedarguments.DatasourceName} ";
@@ -240,7 +245,7 @@ namespace Beep.DeveloperAssistant.Logic
 
                         if (ExtensionsHelpers.DataSource.ConnectionStatus == System.Data.ConnectionState.Open)
                         {
-                            if (ExtensionsHelpers.Vismanager.Controlmanager.InputBoxYesNo("Beep DM", "Are you sure, this might take some time?") == Beep.Vis.Module.DialogResult.Yes)
+                            if (ExtensionsHelpers.Vismanager.Controlmanager.InputBoxYesNo("Beep DM", "Are you sure, this might take some time?") ==DialogResult.Yes)
                             {
 
                                 int i = 0;
@@ -358,7 +363,7 @@ namespace Beep.DeveloperAssistant.Logic
                 if (ExtensionsHelpers.pbr.BranchType == EnumPointType.DataPoint)
                 {
 
-                    if (ExtensionsHelpers.Vismanager.Controlmanager.InputBoxYesNo("Beep DM", "Are you sure, this might take some time?") == Beep.Vis.Module.DialogResult.Yes)
+                    if (ExtensionsHelpers.Vismanager.Controlmanager.InputBoxYesNo("Beep DM", "Are you sure, this might take some time?") ==DialogResult.Yes)
                     {
 
                         int i = 0;
@@ -399,7 +404,7 @@ namespace Beep.DeveloperAssistant.Logic
                             if (ls.Count > 0)
                             {
                                 string classnamespases = string.Empty;
-                                if (ExtensionsHelpers.Vismanager.Controlmanager.InputBox("Beep", "Enter NameSpace you like:", ref classnamespases) == Beep.Vis.Module.DialogResult.OK)
+                                if (ExtensionsHelpers.Vismanager.Controlmanager.InputBox("Beep", "Enter NameSpace you like:", ref classnamespases) ==DialogResult.OK)
                                 {
                                     if (string.IsNullOrEmpty(classnamespases))
                                     {

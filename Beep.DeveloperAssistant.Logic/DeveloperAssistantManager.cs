@@ -1,13 +1,18 @@
 ﻿using Beep.DeveloperAssistant.Logic.Models;
-using System.CodeDom.Compiler;
+
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Xml.Linq;
-using TheTechIdea;
-using TheTechIdea.Beep;
+
 using TheTechIdea.Beep.DataBase;
 using TheTechIdea.Beep.Roslyn;
-using TheTechIdea.Util;
+using TheTechIdea.Beep;
+using TheTechIdea.Beep.Addin;
+using TheTechIdea.Beep.ConfigUtil;
+using TheTechIdea.Beep.DriversConfigurations;
+using TheTechIdea.Beep.Editor;
+using TheTechIdea.Beep.Utilities;
+using TheTechIdea.Beep.Vis;
+using TheTechIdea.Beep.Vis.Modules;
 
 namespace Beep.DeveloperAssistant.Logic
 {

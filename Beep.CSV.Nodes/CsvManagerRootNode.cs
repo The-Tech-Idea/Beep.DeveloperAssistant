@@ -1,13 +1,12 @@
-﻿using Beep.Vis.Module;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using TheTechIdea;
+﻿
 using TheTechIdea.Beep;
 using TheTechIdea.Beep.Addin;
 using TheTechIdea.Beep.DataBase;
 using TheTechIdea.Beep.Vis;
-using TheTechIdea.Util;
+using TheTechIdea.Beep.ConfigUtil;
+
+using TheTechIdea.Beep.Editor;
+using TheTechIdea.Beep.Vis.Modules;
 
 namespace Beep.IDE.Nodes
 {
@@ -49,6 +48,8 @@ namespace Beep.IDE.Nodes
         public string BranchClass { get; set; } = "DEV";
          public IBranch ParentBranch { get  ; set  ; }
         public string ObjectType { get; set; } = "Beep.DEV.CSV";
+        public bool Visible { get; set; } = true;
+
         public IBranch CreateCategoryNode(CategoryFolder p)
         {
             return null;
