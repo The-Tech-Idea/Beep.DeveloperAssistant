@@ -6,24 +6,31 @@ using TheTechIdea.Beep.DataBase;
 using TheTechIdea.Beep.Vis;
 using TheTechIdea.Beep.Addin;
 using TheTechIdea.Beep.ConfigUtil;
-using TheTechIdea.Beep.DriversConfigurations;
+
 using TheTechIdea.Beep.Editor;
 using TheTechIdea.Beep.Utilities;
-using TheTechIdea.Beep.Vis;
-using TheTechIdea.Beep.Vis.Modules;
-using TheTechIdea.Beep.DataBase;
-using TheTechIdea.Beep.Logger;
-using DialogResult = TheTechIdea.Beep.Vis.Modules.DialogResult;
 
+using TheTechIdea.Beep.Vis.Modules;
+
+using TheTechIdea.Beep.Logger;
+using TheTechIdea.Beep.Container.Services;
 
 namespace Beep.DeveloperAssistant.Winform
 {
     [AddinAttribute(Caption = "Template Editor", Name = "uc_DeveloperAssistantTemplateDesigner", misc = "AI", addinType = AddinType.Control)]
     public partial class uc_DeveloperAssistantTemplateDesigner : UserControl,IDM_Addin
     {
-        public uc_DeveloperAssistantTemplateDesigner()
+        public uc_DeveloperAssistantTemplateDesigner(IBeepService service)
         {
             InitializeComponent();
+            Details = new AddinDetails();
+            Dependencies = new Dependencies();
+            beepservice = service;
+            Dependencies.Logger = beepservice.lg;
+            Dependencies.DMEEditor = beepservice.DMEEditor;
+            DMEEditor = beepservice.DMEEditor;
+            visManager = beepservice.vis;
+            Details.AddinName = "Template Editor";
         }
 
         public string ParentName { get  ; set  ; }
@@ -43,12 +50,27 @@ namespace Beep.DeveloperAssistant.Winform
         public IPassedArgs Passedarg { get  ; set  ; }
         public ITree TreeEditor { get; private set; }
 
-        IVisManager visManager;
+        private IBranch CurrentBranch;
+        private IBranch ParentBranch;
+
+        public AddinDetails Details { get  ; set  ; }
+        public Dependencies Dependencies { get  ; set  ; }
+
+        private IBeepService beepservice;
+
+        public string GuidID { get  ; set  ; }
+
+        IAppManager visManager;
       
         IBranch RootAppBranch;
         IBranch branch;
-        DeveloperAssistantManager manager;
+        DeveloperClassCreatorUtilities manager;
         IDataSource ds;
+
+        public event EventHandler OnStart;
+        public event EventHandler OnStop;
+        public event EventHandler<ErrorEventArgs> OnError;
+
         public void Run(IPassedArgs pPassedarg)
         {
           
@@ -61,23 +83,22 @@ namespace Beep.DeveloperAssistant.Winform
             ErrorObject = per;
             DMEEditor = pbl;
 
-            visManager = (IVisManager)e.Objects.Where(c => c.Name == "VISUTIL").FirstOrDefault().obj;
-            TreeEditor = (ITree)visManager.Tree;
-            if (e.Objects.Where(c => c.Name == "Branch").Any())
-            {
-                branch = (IBranch)e.Objects.Where(c => c.Name == "Branch").FirstOrDefault().obj;
-            }
-            if (e.Objects.Where(c => c.Name == "RootAppBranch").Any())
-            {
-                RootAppBranch = (IBranch)e.Objects.Where(c => c.Name == "RootAppBranch").FirstOrDefault().obj;
-            }
-            manager = new DeveloperAssistantManager(DMEEditor);
-            manager.LoadTemplates();
-            templatesBindingSource.DataSource=manager.Templates;
-            this.templatesBindingNavigatorSaveItem.Click += TemplatesBindingNavigatorSaveItem_Click;
-            this.CreateClassestoolStripButton.Click += CreateClassestoolStripButton_Click;
-          //  this.CreateEntitybutton.Click += CreateEntitybutton_Click;
-            this.CreateTemplete.Click += CreateTemplete_Click;
+          //  TreeEditor = (ITree)visManager.Tree;
+          //  if (e.Objects.Where(c => c.Name == "Branch").Any())
+          //  {
+          //      branch = (IBranch)e.Objects.Where(c => c.Name == "Branch").FirstOrDefault().obj;
+          //  }
+          //  if (e.Objects.Where(c => c.Name == "RootAppBranch").Any())
+          //  {
+          //      RootAppBranch = (IBranch)e.Objects.Where(c => c.Name == "RootAppBranch").FirstOrDefault().obj;
+          //  }
+          //  manager = new DeveloperAssistantManager(DMEEditor);
+          //  manager.LoadTemplates();
+          //  templatesBindingSource.DataSource=manager.Templates;
+          //  this.templatesBindingNavigatorSaveItem.Click += TemplatesBindingNavigatorSaveItem_Click;
+          //  this.CreateClassestoolStripButton.Click += CreateClassestoolStripButton_Click;
+          ////  this.CreateEntitybutton.Click += CreateEntitybutton_Click;
+          //  this.CreateTemplete.Click += CreateTemplete_Click;
 
 
 
@@ -94,7 +115,7 @@ namespace Beep.DeveloperAssistant.Winform
             string retval = string.Empty;
             string classnamespases=string.Empty;
             List<EntityStructure> entities = new List<EntityStructure>();
-            if (visManager.Controlmanager.InputBox("Beep", "Enter NameSpace you like:", ref classnamespases) ==DialogResult.OK)
+            if (visManager.DialogManager.InputBox("Beep", "Enter NameSpace you like:", ref classnamespases) == BeepDialogResult.OK)
             {
                 if (string.IsNullOrEmpty(classnamespases))
                 {
@@ -103,7 +124,7 @@ namespace Beep.DeveloperAssistant.Winform
 
             }
             string filepath = string.Empty;
-            if (visManager.Controlmanager.InputBox("Beep", "Enter File Path you like to Save To (Leave blank to Save to Default Bin\\Entities Path ", ref filepath) ==DialogResult.OK)
+            if (visManager.DialogManager.InputBox("Beep", "Enter File Path you like to Save To (Leave blank to Save to Default Bin\\Entities Path ", ref filepath) == BeepDialogResult.OK)
             {
                 if (string.IsNullOrEmpty(filepath))
                 {
@@ -144,7 +165,7 @@ namespace Beep.DeveloperAssistant.Winform
                 return;
             }
             string namespaeval = string.Empty;
-            if (visManager.Controlmanager.InputBox("Beep", "Enter NameSpace you like:", ref namespaeval) ==DialogResult.OK)
+            if (visManager.DialogManager.InputBox("Beep", "Enter NameSpace you like:", ref namespaeval) == BeepDialogResult.OK)
             {
                 if (string.IsNullOrEmpty(namespaeval))
                 {
@@ -188,7 +209,7 @@ namespace Beep.DeveloperAssistant.Winform
                 foreach (int item in TreeEditor.SelectedBranchs)
                 {
 
-                    IBranch br = TreeEditor.treeBranchHandler.GetBranch(item);
+                    IBranch br = TreeEditor.Treebranchhandler.GetBranch(item);
                     ds = DMEEditor.GetDataSource(br.DataSourceName);
                     if (ds != null)
                     {
@@ -224,6 +245,69 @@ namespace Beep.DeveloperAssistant.Winform
                 MessageBox.Show("No Entites Selected", "Class Template Designer");
             return entities;
         }
-       
+
+        public void Initialize()
+        {
+            
+        }
+
+        public void Suspend()
+        {
+             
+        }
+
+        public void Resume()
+        {
+             
+        }
+
+        public string GetErrorDetails()
+        {
+           return string.Empty;
+        }
+
+        public void Run(params object[] args)
+        {
+             
+        }
+
+        public Task<IErrorsInfo> RunAsync(IPassedArgs pPassedarg)
+        {
+            return Task.FromResult<IErrorsInfo>(null);
+        }
+
+        public Task<IErrorsInfo> RunAsync(params object[] args)
+        {
+            return Task.FromResult<IErrorsInfo>(null);
+        }
+
+        public void Configure(Dictionary<string, object> settings)
+        {
+            TreeEditor = (ITree)visManager.Tree;
+            CurrentBranch = TreeEditor.CurrentBranch;
+            ParentBranch = TreeEditor.CurrentBranch.ParentBranch;
+            manager = new DeveloperClassCreatorUtilities(DMEEditor);
+            manager.LoadTemplates();
+            templatesBindingSource.DataSource = manager.Templates;
+            this.templatesBindingNavigatorSaveItem.Click += TemplatesBindingNavigatorSaveItem_Click;
+            this.CreateClassestoolStripButton.Click += CreateClassestoolStripButton_Click;
+            //  this.CreateEntitybutton.Click += CreateEntitybutton_Click;
+            this.CreateTemplete.Click += CreateTemplete_Click;
+        }
+
+        public void ApplyTheme()
+        {
+           
+        }
+
+        public void OnNavigatedTo(Dictionary<string, object> parameters)
+        {
+            
+        }
+
+        public void SetError(string message)
+        {
+           
+        }
     }
 }

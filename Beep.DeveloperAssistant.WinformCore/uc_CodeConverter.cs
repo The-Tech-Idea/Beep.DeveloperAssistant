@@ -2,25 +2,31 @@
 
 using Beep.DeveloperAssistant.Logic;
 using TheTechIdea.Beep;
-using TheTechIdea.Beep;
 using TheTechIdea.Beep.Addin;
 using TheTechIdea.Beep.ConfigUtil;
-using TheTechIdea.Beep.DriversConfigurations;
 using TheTechIdea.Beep.Editor;
 using TheTechIdea.Beep.Utilities;
-using TheTechIdea.Beep.Vis;
 using TheTechIdea.Beep.Vis.Modules;
 using TheTechIdea.Beep.DataBase;
 using TheTechIdea.Beep.Logger;
+using TheTechIdea.Beep.Container.Services;
 
 namespace Beep.DeveloperAssistant.WinformCore
 {
     [AddinAttribute(Caption = "Code Converter", Name = "uc_CodeConverter", misc = "AI", addinType = AddinType.Control)]
     public partial class uc_CodeConverter : UserControl, IDM_Addin
     {
-        public uc_CodeConverter()
+        public uc_CodeConverter(IBeepService service)
         {
             InitializeComponent();
+            Details = new AddinDetails();
+            Dependencies = new Dependencies();
+            beepservice = service;
+            Dependencies.Logger = beepservice.lg;
+            Dependencies.DMEEditor = beepservice.DMEEditor;
+            DMEEditor = beepservice.DMEEditor;
+            visManager = beepservice.vis;
+            Details.AddinName = "Code Converter";
         }
         public string ParentName { get; set; }
         public string AddinName { get; set; } = "Template Editor";
@@ -38,14 +44,28 @@ namespace Beep.DeveloperAssistant.WinformCore
         public string EntityName { get; set; }
         public IPassedArgs Passedarg { get; set; }
         public ITree TreeEditor { get; private set; }
-        public IBranch ParentBranch { get; private set; }
 
-        IVisManager visManager;
+        private IBranch CurrentBranch;
+
+        public IBranch ParentBranch { get; private set; }
+        public AddinDetails Details { get  ; set  ; }
+        public Dependencies Dependencies { get  ; set  ; }
+
+        private IBeepService beepservice;
+
+        public string GuidID { get  ; set  ; }
+
+        IAppManager visManager;
 
         IBranch RootAppBranch;
         IBranch branch;
-        DeveloperAssistantManager manager;
+        DeveloperClassCreatorUtilities manager;
         IDataSource ds;
+
+        public event EventHandler OnStart;
+        public event EventHandler OnStop;
+        public event EventHandler<ErrorEventArgs> OnError;
+
         public void Run(IPassedArgs pPassedarg)
         {
 
@@ -54,7 +74,7 @@ namespace Beep.DeveloperAssistant.WinformCore
         public void SetConfig(IDMEEditor pbl, IDMLogger plogger, IUtil putil, string[] args, IPassedArgs e, IErrorsInfo per)
         {
             Passedarg = e;
-            visManager = (IVisManager)e.Objects.Where(c => c.Name == "VISUTIL").FirstOrDefault().obj;
+          
             Logger = plogger;
             DMEEditor = pbl;
             ErrorObject = per;
@@ -72,9 +92,7 @@ namespace Beep.DeveloperAssistant.WinformCore
             {
                 ParentBranch = (IBranch)e.Objects.Where(c => c.Name == "ParentBranch").FirstOrDefault().obj;
             }
-            manager = new DeveloperAssistantManager(DMEEditor);
-            manager.LoadTemplates();
-            this.ToEntitybutton.Click += ToEntitybutton_Click;
+         
 
         }
 
@@ -85,6 +103,67 @@ namespace Beep.DeveloperAssistant.WinformCore
                 return;
             }
             TargettextBox.Text= manager.ConvertPOCOClassToEntity(null,SourcetextBox.Text);
+        }
+
+        public void Initialize()
+        {
+            
+        }
+
+        public void Suspend()
+        {
+            
+        }
+
+        public void Resume()
+        {
+            
+        }
+
+        public string GetErrorDetails()
+        {
+            return "";
+        }
+
+        public void Run(params object[] args)
+        {
+           
+        }
+
+        public Task<IErrorsInfo> RunAsync(IPassedArgs pPassedarg)
+        {
+            return null;
+        }
+
+        public Task<IErrorsInfo> RunAsync(params object[] args)
+        {
+            return null;
+        }
+
+        public void Configure(Dictionary<string, object> settings)
+        {
+            TreeEditor = (ITree)visManager.Tree;
+            CurrentBranch=TreeEditor.CurrentBranch;
+            ParentBranch = TreeEditor.CurrentBranch.ParentBranch;
+       
+            manager = new DeveloperClassCreatorUtilities(DMEEditor);
+            manager.LoadTemplates();
+            this.ToEntitybutton.Click += ToEntitybutton_Click;
+        }
+
+        public void ApplyTheme()
+        {
+            
+        }
+
+        public void OnNavigatedTo(Dictionary<string, object> parameters)
+        {
+            
+        }
+
+        public void SetError(string message)
+        {
+            
         }
     }
 }

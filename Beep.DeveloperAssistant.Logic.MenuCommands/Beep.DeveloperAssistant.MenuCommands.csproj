@@ -1,0 +1,55 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net8.0-windows</TargetFrameworks>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+	  <ImplicitUsings>enable</ImplicitUsings>
+	  <LangVersion>Latest</LangVersion>
+	  <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+	  <Authors>The Tech Idea</Authors>
+	  <Company>The Tech Idea</Company>
+	  <Copyright>2022</Copyright>
+	  <PackageProjectUrl>https://github.com/The-Tech-Idea/</PackageProjectUrl>
+	  <PackageIcon>SimpleODM.png</PackageIcon>
+	  <RepositoryUrl>https://github.com/The-Tech-Idea/</RepositoryUrl>
+	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
+	  <Version>1.0.3</Version>
+	  <Title>Beep.DeveloperAssistant.MenuCommands</Title>
+	  <IncludeSymbols>False</IncludeSymbols>
+	  <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <EmbeddedResource Include="GFX\SVG\classcreatorutilities.svg" />
+    <EmbeddedResource Include="GFX\SVG\compressionutilities.svg" />
+    <EmbeddedResource Include="GFX\SVG\encryptionutilities.svg" />
+    <EmbeddedResource Include="GFX\SVG\localizationutilities.svg" />
+    <EmbeddedResource Include="GFX\SVG\Schedulerutilities.svg" />
+    <EmbeddedResource Include="GFX\SVG\textfile.svg" />
+    <EmbeddedResource Include="GFX\SVG\textfileutilities.svg" />
+    <EmbeddedResource Include="GFX\SVG\webutilities.svg" />
+  </ItemGroup>
+	<ItemGroup>
+		<None Include="..\..\InstallationScripts\LogoGFx\128\SimpleODM.png">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
+	<Target Name="CopyPackage" AfterTargets="Pack">
+		<Copy SourceFiles="$(OutputPath)$(PackageId).$(PackageVersion).nupkg" DestinationFolder="..\..\..\LocalNugetFiles" />
+	</Target>
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+		<Copy SourceFiles="$(TargetDir)$(PackageId).dll" DestinationFolder="$(ProjectDir)..\..\outputDLL\$(PackageId)\$(TargetFramework)" SkipUnchangedFiles="false" />
+	</Target>
+  <ItemGroup>
+    <PackageReference Include="TheTechIdea.Beep.DataManagementModels" Version="2.0.39" />
+    <PackageReference Include="TheTechIdea.Beep.Winform.Extensions" Version="1.0.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Beep.DeveloperAssistant.Logic\Beep.DeveloperAssistant.Logic.csproj" />
+  </ItemGroup>
+
+</Project>

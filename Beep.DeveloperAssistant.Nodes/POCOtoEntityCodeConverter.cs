@@ -19,6 +19,7 @@ namespace Beep.DeveloperAssistant.Nodes
         {
 
         }
+        public string MenuID { get; set; }
         public bool Visible { get; set; } = true;
         public bool IsDataSourceNode { get; set; } = false;
         public string GuidID { get; set; } = Guid.NewGuid().ToString();
@@ -28,7 +29,7 @@ namespace Beep.DeveloperAssistant.Nodes
         public string MiscStringID { get; set; }
         public int Order { get; set; } = 0;
         public object TreeStrucure { get; set; }
-        public IVisManager Visutil { get; set; }
+        public IAppManager Visutil { get; set; }
         public int ID { get; set; }
         public IDMEEditor DMEEditor { get; set; }
         public IDataSource DataSource { get; set; }
