@@ -21,7 +21,7 @@ namespace Beep.DeveloperAssistantMenuCommands
     [AddinAttribute(
         Caption = "Web",
         Name = "DeveloperWebMenuCommands",
-        menu = "Beep",
+        menu = "Developer",
         misc = "DeveloperWebMenuCommands",
         ObjectType = "Beep",
         addinType = AddinType.Class,
@@ -34,16 +34,22 @@ namespace Beep.DeveloperAssistantMenuCommands
         public IPassedArgs Passedargs { get; set; }
         public IDMEEditor DMEEditor { get; set; }
 
-        private FunctionandExtensionsHelpers ExtensionsHelpers;
+      //  private FunctionandExtensionsHelpers ExtensionsHelpers;
         private DeveloperWebUtilities _webUtil;
 
-        public DeveloperWebMenuCommands(IDMEEditor pdMEEditor, IAppManager pvisManager, ITree ptreeControl)
+        public DeveloperWebMenuCommands( IAppManager pvisManager)
         {
-            DMEEditor = pdMEEditor ?? throw new ArgumentNullException(nameof(pdMEEditor));
-            ExtensionsHelpers = new FunctionandExtensionsHelpers(DMEEditor, pvisManager, ptreeControl);
+           
+            DMEEditor = pvisManager.DMEEditor;
             _webUtil = new DeveloperWebUtilities(DMEEditor);
+            if (pvisManager.Tree != null)
+            {
+                tree = (ITree)pvisManager.Tree;
+                ExtensionsHelpers = tree.ExtensionsHelpers;
+            }
         }
-
+        private ITree tree;
+        public IFunctionandExtensionsHelpers ExtensionsHelpers { get; set; }
         #region Commands for DeveloperWebUtilities
 
         [CommandAttribute(

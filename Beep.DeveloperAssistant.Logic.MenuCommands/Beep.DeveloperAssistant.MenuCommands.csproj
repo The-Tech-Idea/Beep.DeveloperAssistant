@@ -14,7 +14,7 @@
 	  <PackageIcon>SimpleODM.png</PackageIcon>
 	  <RepositoryUrl>https://github.com/The-Tech-Idea/</RepositoryUrl>
 	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
-	  <Version>1.0.3</Version>
+	  <Version>1.0.9</Version>
 	  <Title>Beep.DeveloperAssistant.MenuCommands</Title>
 	  <IncludeSymbols>False</IncludeSymbols>
 	  <SymbolPackageFormat>snupkg</SymbolPackageFormat>
@@ -26,6 +26,7 @@
     <EmbeddedResource Include="GFX\SVG\compressionutilities.svg" />
     <EmbeddedResource Include="GFX\SVG\encryptionutilities.svg" />
     <EmbeddedResource Include="GFX\SVG\localizationutilities.svg" />
+    <EmbeddedResource Include="GFX\SVG\developer.svg" />
     <EmbeddedResource Include="GFX\SVG\Schedulerutilities.svg" />
     <EmbeddedResource Include="GFX\SVG\textfile.svg" />
     <EmbeddedResource Include="GFX\SVG\textfileutilities.svg" />
@@ -45,7 +46,8 @@
 	</Target>
   <ItemGroup>
     <PackageReference Include="TheTechIdea.Beep.DataManagementModels" Version="2.0.39" />
-    <PackageReference Include="TheTechIdea.Beep.Winform.Extensions" Version="1.0.7" />
+    <PackageReference Include="TheTechIdea.Beep.Vis.Modules" Version="1.0.131" />
+    <PackageReference Include="TheTechIdea.Beep.Winform.Extensions" Version="1.0.8" />
   </ItemGroup>
 
   <ItemGroup>

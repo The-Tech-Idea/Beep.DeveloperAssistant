@@ -19,7 +19,7 @@ namespace Beep.DeveloperAssistant.MenuCommands
     [AddinAttribute(
         Caption = "Scheduling",
         Name = "DeveloperSchedulingMenuCommands",
-        menu = "Beep",
+        menu = "Developer",
         misc = "DeveloperSchedulingMenuCommands",
         ObjectType = "Beep",
         addinType = AddinType.Class,
@@ -32,17 +32,24 @@ namespace Beep.DeveloperAssistant.MenuCommands
         public IPassedArgs Passedargs { get; set; }
         public IDMEEditor DMEEditor { get; set; }
 
-        private FunctionandExtensionsHelpers ExtensionsHelpers;
+       
         private DeveloperSchedulingUtilities _scheduler;
         private CancellationTokenSource _cts;
 
-        public DeveloperSchedulingMenuCommands(IDMEEditor pdMEEditor, IAppManager pvisManager, ITree ptreeControl)
+        public DeveloperSchedulingMenuCommands(IAppManager pvisManager)
         {
-            DMEEditor = pdMEEditor ?? throw new ArgumentNullException(nameof(pdMEEditor));
-            ExtensionsHelpers = new FunctionandExtensionsHelpers(DMEEditor, pvisManager, ptreeControl);
+     
+            DMEEditor = pvisManager.DMEEditor;
             _scheduler = new DeveloperSchedulingUtilities(DMEEditor);
             _cts = new CancellationTokenSource();
+            if (pvisManager.Tree != null)
+            {
+                tree = (ITree)pvisManager.Tree;
+                ExtensionsHelpers = tree.ExtensionsHelpers;
+            }
         }
+        private ITree tree;
+        public IFunctionandExtensionsHelpers ExtensionsHelpers { get; set; }
 
         #region Commands for DeveloperSchedulingUtilities
 

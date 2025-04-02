@@ -22,7 +22,7 @@ namespace Beep.DeveloperAssistant.MenuCommands
     [AddinAttribute(
         Caption = "Class Creator",
         Name = "DeveloperClassCreatorMenuCommands",
-        menu = "Beep",
+        menu = "Developer",
         misc = "DeveloperClassCreatorMenuCommands",
         ObjectType = "Beep",
         addinType = AddinType.Class,
@@ -35,15 +35,22 @@ namespace Beep.DeveloperAssistant.MenuCommands
         public IPassedArgs Passedargs { get; set; }
         public IDMEEditor DMEEditor { get; set; }
 
-        private FunctionandExtensionsHelpers ExtensionsHelpers;
+      //  private FunctionandExtensionsHelpers ExtensionsHelpers;
         private DeveloperClassCreatorUtilities _classCreator;
 
-        public DeveloperClassCreatorMenuCommands(IDMEEditor pdMEEditor, IAppManager pvisManager, ITree ptreeControl)
+        public DeveloperClassCreatorMenuCommands( IAppManager pvisManager)
         {
-            DMEEditor = pdMEEditor ?? throw new ArgumentNullException(nameof(pdMEEditor));
-            ExtensionsHelpers = new FunctionandExtensionsHelpers(DMEEditor, pvisManager, ptreeControl);
+       
+            DMEEditor = pvisManager.DMEEditor;
             _classCreator = new DeveloperClassCreatorUtilities(DMEEditor);
+            if (pvisManager.Tree != null)
+            {
+                tree = (ITree)pvisManager.Tree;
+                ExtensionsHelpers = tree.ExtensionsHelpers;
+            }
         }
+        private ITree tree;
+        public IFunctionandExtensionsHelpers ExtensionsHelpers { get; set; }
 
         #region Commands
 

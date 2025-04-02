@@ -18,7 +18,7 @@ namespace Beep.DeveloperAssistant.MenuCommands
     [AddinAttribute(
         Caption = "Encryption",
         Name = "DeveloperEncryptionMenuCommands",
-        menu = "Beep",
+        menu = "Developer",
         misc = "DeveloperEncryptionMenuCommands",
         ObjectType = "Beep",
         addinType = AddinType.Class,
@@ -31,13 +31,19 @@ namespace Beep.DeveloperAssistant.MenuCommands
         public IPassedArgs Passedargs { get; set; }
         public IDMEEditor DMEEditor { get; set; }
 
-        private FunctionandExtensionsHelpers ExtensionsHelpers;
+      //  private FunctionandExtensionsHelpers ExtensionsHelpers;
 
-        public DeveloperEncryptionMenuCommands(IDMEEditor pdMEEditor, IAppManager pvisManager, ITree ptreeControl)
+        public DeveloperEncryptionMenuCommands( IAppManager pvisManager)
         {
-            DMEEditor = pdMEEditor ?? throw new ArgumentNullException(nameof(pdMEEditor));
-            ExtensionsHelpers = new FunctionandExtensionsHelpers(DMEEditor, pvisManager, ptreeControl);
+            DMEEditor = pvisManager.DMEEditor;
+            if (pvisManager.Tree != null)
+            {
+                tree = (ITree)pvisManager.Tree;
+                ExtensionsHelpers = tree.ExtensionsHelpers;
+            }
         }
+        private ITree tree;
+        public IFunctionandExtensionsHelpers ExtensionsHelpers { get; set; }
 
         #region Commands for DeveloperEncryptionUtilities
 

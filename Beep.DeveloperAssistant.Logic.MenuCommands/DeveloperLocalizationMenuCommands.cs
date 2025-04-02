@@ -18,7 +18,7 @@ namespace Beep.DeveloperAssistant.MenuCommands
     [AddinAttribute(
         Caption = "Localization",
         Name = "DeveloperLocalizationMenuCommands",
-        menu = "Beep",
+         menu = "Developer",
         misc = "DeveloperLocalizationMenuCommands",
         ObjectType = "Beep",
         addinType = AddinType.Class,
@@ -31,15 +31,23 @@ namespace Beep.DeveloperAssistant.MenuCommands
         public IPassedArgs Passedargs { get; set; }
         public IDMEEditor DMEEditor { get; set; }
 
-        private FunctionandExtensionsHelpers ExtensionsHelpers;
+       // private FunctionandExtensionsHelpers ExtensionsHelpers;
         private DeveloperLocalizationUtilities _locUtil;
 
-        public DeveloperLocalizationMenuCommands(IDMEEditor pdMEEditor, IAppManager pvisManager, ITree ptreeControl)
+        public DeveloperLocalizationMenuCommands(IAppManager pvisManager)
         {
-            DMEEditor = pdMEEditor ?? throw new ArgumentNullException(nameof(pdMEEditor));
-            ExtensionsHelpers = new FunctionandExtensionsHelpers(DMEEditor, pvisManager, ptreeControl);
+           
+           
+            DMEEditor = pvisManager.DMEEditor;
             _locUtil = new DeveloperLocalizationUtilities(DMEEditor);
+            if (pvisManager.Tree != null)
+            {
+                tree = (ITree)pvisManager.Tree;
+                ExtensionsHelpers = tree.ExtensionsHelpers;
+            }
         }
+        private ITree tree;
+        public IFunctionandExtensionsHelpers ExtensionsHelpers { get; set; }
 
         #region Commands
 
