@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFrameworks>net8.0</TargetFrameworks>
+		<TargetFrameworks>net6.0;net7.0;net8.0;net9.0</TargetFrameworks>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<LangVersion>Latest</LangVersion>
 		<ImplicitUsings>enable</ImplicitUsings>
@@ -42,7 +42,7 @@
 	</Target>
 
 	<ItemGroup>
-	  <PackageReference Include="TheTechIdea.Beep.DataManagementModels" Version="2.0.39" />
-	  <PackageReference Include="TheTechIdea.Beep.Vis.Modules" Version="1.0.131" />
+	  <PackageReference Include="TheTechIdea.Beep.DataManagementModels" Version="2.0.40" />
+	  <PackageReference Include="TheTechIdea.Beep.Vis.Modules" Version="1.0.132" />
 	</ItemGroup>
 </Project>
