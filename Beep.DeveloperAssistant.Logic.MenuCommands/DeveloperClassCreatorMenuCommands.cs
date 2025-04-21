@@ -14,7 +14,6 @@ using TheTechIdea.Beep.Editor;
 using TheTechIdea.Beep.Utilities;
 using TheTechIdea.Beep.Vis;
 using TheTechIdea.Beep.Vis.Modules;
-using TheTechIdea.Beep.Winform.Extensions;
 using Beep.DeveloperAssistant.Logic;
 
 namespace Beep.DeveloperAssistant.MenuCommands
