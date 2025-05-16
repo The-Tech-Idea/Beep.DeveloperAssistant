@@ -1,4 +1,5 @@
-﻿using Beep.DeveloperAssistant.Logic.Models;
+﻿using Beep.DeveloperAssistant.Logic;
+using Beep.DeveloperAssistant.Logic.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -6,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Linq;
 using TheTechIdea.Beep;
 using TheTechIdea.Beep.Addin;
 using TheTechIdea.Beep.ConfigUtil;
@@ -14,7 +16,7 @@ using TheTechIdea.Beep.Editor;
 using TheTechIdea.Beep.Utilities;
 using TheTechIdea.Beep.Vis;
 using TheTechIdea.Beep.Vis.Modules;
-using Beep.DeveloperAssistant.Logic;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace Beep.DeveloperAssistant.MenuCommands
 {
@@ -53,6 +55,30 @@ namespace Beep.DeveloperAssistant.MenuCommands
 
         #region Commands
 
+        /// <summary>
+        /// Creates a Plain Old CLR Object (POCO) class based on user input.
+        /// </summary>
+        /// <param name="Passedarguments">Arguments passed to the command.</param>
+        /// <returns>An IErrorsInfo object containing any errors that occurred during execution.</returns>
+        /// <remarks>
+        /// This command allows developers to quickly generate a POCO class by:
+        /// 1. Prompting for the class name
+        /// 2. Prompting for the namespace
+        /// 3. Optionally selecting an output directory for the generated file
+        /// 
+        /// The generated POCO class includes:
+        /// - Basic properties (Id and Name by default)
+        /// - Standard C# property syntax with getters and setters
+        /// - No additional behaviors or dependencies
+        /// 
+        /// POCOs are useful for:
+        /// - Data transfer objects (DTOs)
+        /// - Model classes in MVVM/MVC patterns
+        /// - Entity representations without ORM-specific attributes
+        /// - Simple data containers
+        /// 
+        /// The file is saved to the selected directory if specified, otherwise it's displayed in a message box.
+        /// </remarks>
         [CommandAttribute(
             Caption = "Create POCO Class",
             Name = "CreatePOCOClassCmd",
@@ -66,42 +92,111 @@ namespace Beep.DeveloperAssistant.MenuCommands
             DMEEditor.ErrorObject.Flag = Errors.Ok;
             try
             {
+                // Prompt for class name with validation
                 string className = Microsoft.VisualBasic.Interaction.InputBox("Enter class name:", "Create POCO Class", "MyClass");
-                string namespaceName = Microsoft.VisualBasic.Interaction.InputBox("Enter namespace:", "Namespace", "MyApp.Models");
-                using (OpenFileDialog ofd = new OpenFileDialog { Filter = "All files (*.*)|*.*", Title = "Select output directory (optional)" })
+                if (string.IsNullOrEmpty(className))
                 {
-                    if (!string.IsNullOrEmpty(className) && !string.IsNullOrEmpty(namespaceName))
-                    {
-                        var entity = new EntityStructure
-                        {
-                            EntityName = className,
-                            Fields = new List<EntityField>
-                            {
-                                new EntityField { fieldname = "Id", fieldtype = "int" },
-                                new EntityField { fieldname = "Name", fieldtype = "string" }
-                            }
-                        };
+                    DMEEditor.AddLogMessage("Info", "POCO class creation canceled: No class name provided", DateTime.Now, 0, null, Errors.Ok);
+                    return DMEEditor.ErrorObject;
+                }
 
-                        string code = await _classCreator.CreatePOCOClassAsync(className, entity, null, null, null, ofd.ShowDialog() == DialogResult.OK ? Path.GetDirectoryName(ofd.FileName) : null, namespaceName, true);
-                        if (code != null)
-                        {
-                            MessageBox.Show($"Generated POCO Class:\n{code}", "POCO Class Generated", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            DMEEditor.AddLogMessage("Success", $"POCO class {className} generated", DateTime.Now, 0, null, Errors.Ok);
-                        }
-                        else
-                        {
-                            DMEEditor.AddLogMessage("Fail", $"Failed to generate POCO class {className}", DateTime.Now, 0, null, Errors.Failed);
-                        }
+                // Prompt for namespace with validation
+                string namespaceName = Microsoft.VisualBasic.Interaction.InputBox("Enter namespace:", "Namespace", "MyApp.Models");
+                if (string.IsNullOrEmpty(namespaceName))
+                {
+                    DMEEditor.AddLogMessage("Info", "POCO class creation canceled: No namespace provided", DateTime.Now, 0, null, Errors.Ok);
+                    return DMEEditor.ErrorObject;
+                }
+
+                // Optional: select output directory
+                using (OpenFileDialog ofd = new OpenFileDialog
+                {
+                    Filter = "All files (*.*)|*.*",
+                    Title = "Select output directory (click any file in target directory)",
+                    CheckFileExists = false
+                })
+                {
+                    // Define default entity structure
+                    var entity = new EntityStructure
+                    {
+                        EntityName = className,
+                        Fields = new List<EntityField>
+                {
+                    new EntityField { fieldname = "Id", fieldtype = "int" },
+                    new EntityField { fieldname = "Name", fieldtype = "string" }
+                }
+                    };
+
+                    // Get output directory if dialog is confirmed
+                    string outputPath = null;
+                    if (ofd.ShowDialog() == DialogResult.OK)
+                    {
+                        outputPath = Path.GetDirectoryName(ofd.FileName);
+                    }
+
+                    // Generate the POCO class
+                    string code = await _classCreator.CreatePOCOClassAsync(
+                        className,
+                        entity,
+                        null,   // Using header
+                        null,   // Implementations
+                        null,   // Extra code
+                        outputPath,
+                        namespaceName,
+                        true    // Generate code files
+                    );
+
+                    // Check if generation was successful
+                    if (code != null)
+                    {
+                        // Prepare success message based on whether file was saved or just generated
+                        string successMessage = outputPath != null
+                            ? $"POCO class {className} generated and saved to {outputPath}"
+                            : $"POCO class {className} generated";
+
+                        // Show the generated code
+                        MessageBox.Show($"Generated POCO Class:\n\n{code}", "POCO Class Generated", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        DMEEditor.AddLogMessage("Success", successMessage, DateTime.Now, 0, null, Errors.Ok);
+                    }
+                    else
+                    {
+                        DMEEditor.AddLogMessage("Fail", $"Failed to generate POCO class {className}", DateTime.Now, 0, null, Errors.Failed);
+                        MessageBox.Show($"Failed to generate POCO class {className}", "Generation Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
             }
             catch (Exception ex)
             {
                 DMEEditor.AddLogMessage("Fail", $"Error creating POCO class: {ex.Message}", DateTime.Now, 0, Passedarguments.DatasourceName, Errors.Failed);
+                MessageBox.Show($"Error creating POCO class: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
             return DMEEditor.ErrorObject;
         }
-
+        /// <summary>
+        /// Creates a class that implements INotifyPropertyChanged interface for property change notification.
+        /// </summary>
+        /// <param name="Passedarguments">Arguments passed to the command.</param>
+        /// <returns>An IErrorsInfo object containing any errors that occurred during execution.</returns>
+        /// <remarks>
+        /// This command generates a class with the INotifyPropertyChanged implementation which is essential for:
+        /// 
+        /// - Data binding in WPF, UWP, and other XAML-based applications
+        /// - Implementing the MVVM (Model-View-ViewModel) pattern
+        /// - Creating observable properties that notify the UI when values change
+        /// 
+        /// The generated class includes:
+        /// - Private backing fields for each property (_propertyNameValue)
+        /// - Public properties with getters and setters that raise property change events
+        /// - PropertyChanged event implementation
+        /// - NotifyPropertyChanged helper method with CallerMemberName attribute
+        /// 
+        /// This pattern is widely used in .NET UI frameworks to enable automatic UI updates
+        /// when property values change, simplifying two-way data binding scenarios.
+        /// 
+        /// If the output path is specified, the class will be saved to a file; otherwise,
+        /// it will be displayed in a message box.
+        /// </remarks>
         [CommandAttribute(
             Caption = "Create INotify Class",
             Name = "CreateINotifyClassCmd",
@@ -115,42 +210,113 @@ namespace Beep.DeveloperAssistant.MenuCommands
             DMEEditor.ErrorObject.Flag = Errors.Ok;
             try
             {
+                // Prompt for class name with validation
                 string className = Microsoft.VisualBasic.Interaction.InputBox("Enter class name:", "Create INotify Class", "MyNotifyClass");
-                string namespaceName = Microsoft.VisualBasic.Interaction.InputBox("Enter namespace:", "Namespace", "MyApp.Models");
-                using (OpenFileDialog ofd = new OpenFileDialog { Filter = "All files (*.*)|*.*", Title = "Select output directory (optional)" })
+                if (string.IsNullOrEmpty(className))
                 {
-                    if (!string.IsNullOrEmpty(className) && !string.IsNullOrEmpty(namespaceName))
-                    {
-                        var entity = new EntityStructure
-                        {
-                            EntityName = className,
-                            Fields = new List<EntityField>
-                            {
-                                new EntityField { fieldname = "Id", fieldtype = "int" },
-                                new EntityField { fieldname = "Name", fieldtype = "string" }
-                            }
-                        };
+                    DMEEditor.AddLogMessage("Info", "INotify class creation canceled: No class name provided", DateTime.Now, 0, null, Errors.Ok);
+                    return DMEEditor.ErrorObject;
+                }
 
-                        string code = await _classCreator.CreateINotifyClassAsync(entity, null, null, null, ofd.ShowDialog() == DialogResult.OK ? Path.GetDirectoryName(ofd.FileName) : null, namespaceName, true);
-                        if (code != null)
-                        {
-                            MessageBox.Show($"Generated INotify Class:\n{code}", "INotify Class Generated", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            DMEEditor.AddLogMessage("Success", $"INotify class {className} generated", DateTime.Now, 0, null, Errors.Ok);
-                        }
-                        else
-                        {
-                            DMEEditor.AddLogMessage("Fail", $"Failed to generate INotify class {className}", DateTime.Now, 0, null, Errors.Failed);
-                        }
+                // Prompt for namespace with validation
+                string namespaceName = Microsoft.VisualBasic.Interaction.InputBox("Enter namespace:", "Namespace", "MyApp.Models");
+                if (string.IsNullOrEmpty(namespaceName))
+                {
+                    DMEEditor.AddLogMessage("Info", "INotify class creation canceled: No namespace provided", DateTime.Now, 0, null, Errors.Ok);
+                    return DMEEditor.ErrorObject;
+                }
+
+                // Optional: select output directory
+                using (OpenFileDialog ofd = new OpenFileDialog
+                {
+                    Filter = "All files (*.*)|*.*",
+                    Title = "Select output directory (click any file in target directory)",
+                    CheckFileExists = false
+                })
+                {
+                    // Define default entity structure with sample properties
+                    var entity = new EntityStructure
+                    {
+                        EntityName = className,
+                        Fields = new List<EntityField>
+                {
+                    new EntityField { fieldname = "Id", fieldtype = "int" },
+                    new EntityField { fieldname = "Name", fieldtype = "string" }
+                }
+                    };
+
+                    // Get output directory if dialog is confirmed
+                    string outputPath = null;
+                    if (ofd.ShowDialog() == DialogResult.OK)
+                    {
+                        outputPath = Path.GetDirectoryName(ofd.FileName);
+                    }
+
+                    // Generate the INotify class
+                    string code = await _classCreator.CreateINotifyClassAsync(
+                        entity,
+                        "using System.ComponentModel;\nusing System.Runtime.CompilerServices;", // Required usings
+                        null,   // Additional interfaces to implement
+                        null,   // Extra code
+                        outputPath,
+                        namespaceName,
+                        true    // Generate code files
+                    );
+
+                    // Check if generation was successful
+                    if (code != null)
+                    {
+                        // Prepare success message based on whether file was saved or just generated
+                        string successMessage = outputPath != null
+                            ? $"INotify class {className} generated and saved to {outputPath}"
+                            : $"INotify class {className} generated";
+
+                        // Show the generated code
+                        MessageBox.Show($"Generated INotify Class:\n\n{code}", "INotify Class Generated", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        DMEEditor.AddLogMessage("Success", successMessage, DateTime.Now, 0, null, Errors.Ok);
+                    }
+                    else
+                    {
+                        DMEEditor.AddLogMessage("Fail", $"Failed to generate INotify class {className}", DateTime.Now, 0, null, Errors.Failed);
+                        MessageBox.Show($"Failed to generate INotify class {className}", "Generation Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
             }
             catch (Exception ex)
             {
                 DMEEditor.AddLogMessage("Fail", $"Error creating INotify class: {ex.Message}", DateTime.Now, 0, Passedarguments.DatasourceName, Errors.Failed);
+                MessageBox.Show($"Error creating INotify class: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
             return DMEEditor.ErrorObject;
         }
-
+        /// <summary>
+        /// Creates an Entity class based on user input, which inherits from the base Entity class.
+        /// </summary>
+        /// <param name="Passedarguments">Arguments passed to the command.</param>
+        /// <returns>An IErrorsInfo object containing any errors that occurred during execution.</returns>
+        /// <remarks>
+        /// This command generates a class that inherits from the Entity base class, which is useful for:
+        /// 
+        /// - Data modeling in application domains
+        /// - Creating persistent data entities for databases
+        /// - Building business objects with consistent property change tracking
+        /// 
+        /// The generated Entity class includes:
+        /// - Private backing fields for each property (_propertyNameValue)
+        /// - Public properties that use the SetProperty method for assignments
+        /// - Inheritance from the Entity base class which typically provides:
+        ///   * Property change notification
+        ///   * Validation support
+        ///   * Persistence capabilities
+        ///   * State tracking functionality
+        /// 
+        /// Entity classes are the foundation of domain-driven design and are used to represent
+        /// business concepts and data that will be stored, retrieved, and manipulated by the application.
+        /// 
+        /// If the output path is specified, the class will be saved to a file; otherwise,
+        /// it will be displayed in a message box.
+        /// </remarks>
         [CommandAttribute(
             Caption = "Create Entity Class",
             Name = "CreateEntityClassCmd",
@@ -164,42 +330,116 @@ namespace Beep.DeveloperAssistant.MenuCommands
             DMEEditor.ErrorObject.Flag = Errors.Ok;
             try
             {
+                // Prompt for class name with validation
                 string className = Microsoft.VisualBasic.Interaction.InputBox("Enter class name:", "Create Entity Class", "MyEntity");
-                string namespaceName = Microsoft.VisualBasic.Interaction.InputBox("Enter namespace:", "Namespace", "MyApp.Entities");
-                using (OpenFileDialog ofd = new OpenFileDialog { Filter = "All files (*.*)|*.*", Title = "Select output directory (optional)" })
+                if (string.IsNullOrEmpty(className))
                 {
-                    if (!string.IsNullOrEmpty(className) && !string.IsNullOrEmpty(namespaceName))
-                    {
-                        var entity = new EntityStructure
-                        {
-                            EntityName = className,
-                            Fields = new List<EntityField>
-                            {
-                                new EntityField { fieldname = "Id", fieldtype = "int" },
-                                new EntityField { fieldname = "Name", fieldtype = "string" }
-                            }
-                        };
+                    DMEEditor.AddLogMessage("Info", "Entity class creation canceled: No class name provided", DateTime.Now, 0, null, Errors.Ok);
+                    return DMEEditor.ErrorObject;
+                }
 
-                        string code = await _classCreator.CreateEntityClassAsync(entity, null, null, ofd.ShowDialog() == DialogResult.OK ? Path.GetDirectoryName(ofd.FileName) : null, namespaceName, true);
-                        if (code != null)
-                        {
-                            MessageBox.Show($"Generated Entity Class:\n{code}", "Entity Class Generated", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            DMEEditor.AddLogMessage("Success", $"Entity class {className} generated", DateTime.Now, 0, null, Errors.Ok);
-                        }
-                        else
-                        {
-                            DMEEditor.AddLogMessage("Fail", $"Failed to generate Entity class {className}", DateTime.Now, 0, null, Errors.Failed);
-                        }
+                // Prompt for namespace with validation
+                string namespaceName = Microsoft.VisualBasic.Interaction.InputBox("Enter namespace:", "Namespace", "MyApp.Entities");
+                if (string.IsNullOrEmpty(namespaceName))
+                {
+                    DMEEditor.AddLogMessage("Info", "Entity class creation canceled: No namespace provided", DateTime.Now, 0, null, Errors.Ok);
+                    return DMEEditor.ErrorObject;
+                }
+
+                // Optional: select output directory
+                using (OpenFileDialog ofd = new OpenFileDialog
+                {
+                    Filter = "All files (*.*)|*.*",
+                    Title = "Select output directory (click any file in target directory)",
+                    CheckFileExists = false
+                })
+                {
+                    // Define default entity structure with sample properties
+                    var entity = new EntityStructure
+                    {
+                        EntityName = className,
+                        Fields = new List<EntityField>
+                {
+                    new EntityField { fieldname = "Id", fieldtype = "int" },
+                    new EntityField { fieldname = "Name", fieldtype = "string" }
+                }
+                    };
+
+                    // Get output directory if dialog is confirmed
+                    string outputPath = null;
+                    if (ofd.ShowDialog() == DialogResult.OK)
+                    {
+                        outputPath = Path.GetDirectoryName(ofd.FileName);
+                    }
+
+                    // Generate the Entity class
+                    string code = await _classCreator.CreateEntityClassAsync(
+                        entity,
+                        "using TheTechIdea.Beep.DataBase;", // Required using for Entity base class
+                        null,   // Extra code
+                        outputPath,
+                        namespaceName,
+                        true    // Generate code files
+                    );
+
+                    // Check if generation was successful
+                    if (code != null)
+                    {
+                        // Prepare success message based on whether file was saved or just generated
+                        string successMessage = outputPath != null
+                            ? $"Entity class {className} generated and saved to {outputPath}"
+                            : $"Entity class {className} generated";
+
+                        // Show the generated code
+                        MessageBox.Show($"Generated Entity Class:\n\n{code}", "Entity Class Generated", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        DMEEditor.AddLogMessage("Success", successMessage, DateTime.Now, 0, null, Errors.Ok);
+                    }
+                    else
+                    {
+                        DMEEditor.AddLogMessage("Fail", $"Failed to generate Entity class {className}", DateTime.Now, 0, null, Errors.Failed);
+                        MessageBox.Show($"Failed to generate Entity class {className}", "Generation Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
             }
             catch (Exception ex)
             {
                 DMEEditor.AddLogMessage("Fail", $"Error creating Entity class: {ex.Message}", DateTime.Now, 0, Passedarguments.DatasourceName, Errors.Failed);
+                MessageBox.Show($"Error creating Entity class: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
             return DMEEditor.ErrorObject;
         }
-
+        /// <summary>
+        /// Creates a DLL (Dynamic Link Library) containing entity classes based on sample entity definitions.
+        /// </summary>
+        /// <param name="Passedarguments">Arguments passed to the command.</param>
+        /// <returns>An IErrorsInfo object containing any errors that occurred during execution.</returns>
+        /// <remarks>
+        /// This command generates a DLL containing multiple entity classes by:
+        /// 
+        /// 1. Prompting for a DLL name (without extension)
+        /// 2. Prompting for an output directory path
+        /// 3. Creating sample entity classes with properties
+        /// 4. Compiling all generated classes into a single DLL file
+        /// 
+        /// The process includes:
+        /// - Creating C# class files for each entity in the specified output directory
+        /// - Using the Roslyn compiler to build a DLL from these source files
+        /// - Providing progress updates during the compilation process
+        /// 
+        /// By default, the command creates two sample entities:
+        /// - Sample1 with Id (int) and Name (string) properties
+        /// - Sample2 with Code (string) and Value (double) properties
+        /// 
+        /// Creating a DLL is useful for:
+        /// - Sharing class definitions across multiple projects
+        /// - Creating reusable libraries of domain models
+        /// - Runtime loading of entity definitions
+        /// - Packaging related entity classes together
+        /// 
+        /// The resulting DLL can be referenced in other .NET projects and the entity 
+        /// classes within it can be instantiated and used at runtime.
+        /// </remarks>
         [CommandAttribute(
             Caption = "Create DLL from Entities",
             Name = "CreateDLLFromEntitiesCmd",
@@ -213,36 +453,137 @@ namespace Beep.DeveloperAssistant.MenuCommands
             DMEEditor.ErrorObject.Flag = Errors.Ok;
             try
             {
+                // Prompt for DLL name with validation
                 string dllName = Microsoft.VisualBasic.Interaction.InputBox("Enter DLL name:", "Create DLL", "MyClasses");
-                string outputPath = Microsoft.VisualBasic.Interaction.InputBox("Enter output path (leave blank for default):", "Output Path", DMEEditor.ConfigEditor.Config.ScriptsPath);
-                if (!string.IsNullOrEmpty(dllName))
+                if (string.IsNullOrEmpty(dllName))
                 {
-                    var entities = new List<EntityStructure>
-                    {
-                        new EntityStructure { EntityName = "Sample1", Fields = new List<EntityField> { new EntityField { fieldname = "Id", fieldtype = "int" }, new EntityField { fieldname = "Name", fieldtype = "string" } } },
-                        new EntityStructure { EntityName = "Sample2", Fields = new List<EntityField> { new EntityField { fieldname = "Code", fieldtype = "string" }, new EntityField { fieldname = "Value", fieldtype = "double" } } }
-                    };
+                    DMEEditor.AddLogMessage("Info", "DLL creation canceled: No DLL name provided", DateTime.Now, 0, null, Errors.Ok);
+                    return DMEEditor.ErrorObject;
+                }
 
-                    var cts = new CancellationTokenSource();
-                    string result = await _classCreator.CreateDLLAsync(dllName, entities, outputPath, new Progress<PassedArgs>(args => DMEEditor.AddLogMessage("Progress", args.ParameterString1, DateTime.Now, 0, null, Errors.Information)), cts.Token);
-                    if (result == "ok")
+                // Prompt for output directory
+                string outputPath = Microsoft.VisualBasic.Interaction.InputBox(
+                    "Enter output path (leave blank for default):",
+                    "Output Path",
+                    DMEEditor.ConfigEditor.Config.ScriptsPath);
+
+                if (string.IsNullOrEmpty(outputPath))
+                {
+                    outputPath = DMEEditor.ConfigEditor.Config.ScriptsPath;
+                    DMEEditor.AddLogMessage("Info", $"Using default output path: {outputPath}", DateTime.Now, 0, null, Errors.Ok);
+                }
+
+                // Check if output directory exists and is writable
+                if (!Directory.Exists(outputPath))
+                {
+                    try
                     {
-                        MessageBox.Show($"DLL {dllName} created successfully at {outputPath}", "DLL Created", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        DMEEditor.AddLogMessage("Success", $"DLL {dllName} created", DateTime.Now, 0, null, Errors.Ok);
+                        Directory.CreateDirectory(outputPath);
+                        DMEEditor.AddLogMessage("Info", $"Created output directory: {outputPath}", DateTime.Now, 0, null, Errors.Ok);
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        DMEEditor.AddLogMessage("Fail", $"Failed to create DLL {dllName}: {result}", DateTime.Now, 0, null, Errors.Failed);
+                        DMEEditor.AddLogMessage("Error", $"Failed to create output directory: {ex.Message}", DateTime.Now, 0, null, Errors.Failed);
+                        MessageBox.Show($"Failed to create output directory: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return DMEEditor.ErrorObject;
                     }
+                }
+
+                // Create sample entity definitions
+                var entities = new List<EntityStructure>
+        {
+            new EntityStructure {
+                EntityName = "Sample1",
+                Fields = new List<EntityField> {
+                    new EntityField { fieldname = "Id", fieldtype = "int" },
+                    new EntityField { fieldname = "Name", fieldtype = "string" }
+                }
+            },
+            new EntityStructure {
+                EntityName = "Sample2",
+                Fields = new List<EntityField> {
+                    new EntityField { fieldname = "Code", fieldtype = "string" },
+                    new EntityField { fieldname = "Value", fieldtype = "double" }
+                }
+            }
+        };
+
+                // Set up progress reporting and cancellation
+                var cts = new CancellationTokenSource();
+                var progress = new Progress<PassedArgs>(args =>
+                    DMEEditor.AddLogMessage("Progress", args.ParameterString1, DateTime.Now, 0, null, Errors.Information));
+
+                // Show building status
+                DMEEditor.AddLogMessage("Info", $"Building DLL {dllName}.dll...", DateTime.Now, 0, null, Errors.Ok);
+
+                // Create the DLL asynchronously
+                string result = await _classCreator.CreateDLLAsync(
+                    dllName,
+                    entities,
+                    outputPath,
+                    progress,
+                    cts.Token);
+
+                // Check result and display appropriate message
+                if (result == "ok")
+                {
+                    string fullPath = Path.Combine(outputPath, $"{dllName}.dll");
+                    MessageBox.Show(
+                        $"DLL {dllName}.dll created successfully at:\n{fullPath}",
+                        "DLL Created",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                    DMEEditor.AddLogMessage("Success", $"DLL {dllName}.dll created at {outputPath}", DateTime.Now, 0, null, Errors.Ok);
+                }
+                else
+                {
+                    DMEEditor.AddLogMessage("Fail", $"Failed to create DLL {dllName}: {result}", DateTime.Now, 0, null, Errors.Failed);
+                    MessageBox.Show(
+                        $"Failed to create DLL {dllName}:\n{result}",
+                        "DLL Creation Failed",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
                 }
             }
             catch (Exception ex)
             {
                 DMEEditor.AddLogMessage("Fail", $"Error creating DLL: {ex.Message}", DateTime.Now, 0, Passedarguments.DatasourceName, Errors.Failed);
+                MessageBox.Show($"Error creating DLL: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
             return DMEEditor.ErrorObject;
         }
-
+        /// <summary>
+        /// Creates a DLL (Dynamic Link Library) from existing C# source files in a directory.
+        /// </summary>
+        /// <param name="Passedarguments">Arguments passed to the command.</param>
+        /// <returns>An IErrorsInfo object containing any errors that occurred during execution.</returns>
+        /// <remarks>
+        /// This command compiles multiple C# files into a single DLL by:
+        /// 
+        /// 1. Prompting for a DLL name (without extension)
+        /// 2. Opening a folder browser dialog to select the directory containing .cs files
+        /// 3. Collecting all .cs files from the selected directory
+        /// 4. Compiling them into a single DLL using the Roslyn compiler
+        /// 
+        /// The process includes:
+        /// - Finding all C# source files in the specified directory
+        /// - Using the Roslyn compiler to build a DLL from these source files
+        /// - Providing progress updates during the compilation process
+        /// - Saving the resulting DLL in the same directory as the source files
+        /// 
+        /// This command is useful for:
+        /// - Creating libraries from existing code files
+        /// - Packaging related classes into a distributable assembly
+        /// - Converting a set of source files into a referenceable library
+        /// - Building a DLL without needing a full project file
+        /// 
+        /// The resulting DLL can be referenced in other .NET projects and the classes 
+        /// within it can be instantiated and used at runtime.
+        /// 
+        /// Note: All source files must be compatible with each other (no duplicate class names,
+        /// no conflicting types, etc.) for successful compilation.
+        /// </remarks>
         [CommandAttribute(
             Caption = "Create DLL from Files",
             Name = "CreateDLLFromFilesCmd",
@@ -256,32 +597,115 @@ namespace Beep.DeveloperAssistant.MenuCommands
             DMEEditor.ErrorObject.Flag = Errors.Ok;
             try
             {
+                // Prompt for DLL name with validation
                 string dllName = Microsoft.VisualBasic.Interaction.InputBox("Enter DLL name:", "Create DLL from Files", "MyFileClasses");
-                using (FolderBrowserDialog fbd = new FolderBrowserDialog { Description = "Select directory containing .cs files" })
+                if (string.IsNullOrEmpty(dllName))
                 {
-                    if (!string.IsNullOrEmpty(dllName) && fbd.ShowDialog() == DialogResult.OK)
+                    DMEEditor.AddLogMessage("Info", "DLL creation canceled: No DLL name provided", DateTime.Now, 0, null, Errors.Ok);
+                    return DMEEditor.ErrorObject;
+                }
+
+                // Open folder browser dialog to select directory with .cs files
+                using (FolderBrowserDialog fbd = new FolderBrowserDialog
+                {
+                    Description = "Select directory containing .cs files",
+                    UseDescriptionForTitle = true
+                })
+                {
+                    if (fbd.ShowDialog() == DialogResult.OK)
                     {
+                        // Verify that the selected directory exists
+                        if (!Directory.Exists(fbd.SelectedPath))
+                        {
+                            DMEEditor.AddLogMessage("Error", "Selected directory does not exist", DateTime.Now, 0, null, Errors.Failed);
+                            MessageBox.Show("Selected directory does not exist", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return DMEEditor.ErrorObject;
+                        }
+
+                        // Check if directory contains any .cs files
+                        string[] csFiles = Directory.GetFiles(fbd.SelectedPath, "*.cs");
+                        if (csFiles.Length == 0)
+                        {
+                            DMEEditor.AddLogMessage("Error", "No C# files found in selected directory", DateTime.Now, 0, null, Errors.Failed);
+                            MessageBox.Show("No C# files found in selected directory", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return DMEEditor.ErrorObject;
+                        }
+
+                        // Setup progress reporting and cancellation
                         var cts = new CancellationTokenSource();
-                        string result = await _classCreator.CreateDLLFromFilesPathAsync(dllName, fbd.SelectedPath, fbd.SelectedPath, new Progress<PassedArgs>(args => DMEEditor.AddLogMessage("Progress", args.ParameterString1, DateTime.Now, 0, null, Errors.Information)), cts.Token);
+                        var progress = new Progress<PassedArgs>(args =>
+                            DMEEditor.AddLogMessage("Progress", args.ParameterString1, DateTime.Now, 0, null, Errors.Information));
+
+                        // Show building status
+                        DMEEditor.AddLogMessage("Info", $"Building DLL {dllName}.dll from {csFiles.Length} source files...", DateTime.Now, 0, null, Errors.Ok);
+
+                        // Create the DLL asynchronously
+                        string result = await _classCreator.CreateDLLFromFilesPathAsync(
+                            dllName,
+                            fbd.SelectedPath,
+                            fbd.SelectedPath, // Output to same directory
+                            progress,
+                            cts.Token);
+
+                        // Check result and display appropriate message
                         if (result == "ok")
                         {
-                            MessageBox.Show($"DLL {dllName} created successfully at {fbd.SelectedPath}", "DLL Created", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            DMEEditor.AddLogMessage("Success", $"DLL {dllName} created from files", DateTime.Now, 0, null, Errors.Ok);
+                            string fullPath = Path.Combine(fbd.SelectedPath, $"{dllName}.dll");
+                            MessageBox.Show(
+                                $"DLL {dllName}.dll created successfully at:\n{fullPath}",
+                                "DLL Created",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Information);
+                            DMEEditor.AddLogMessage("Success", $"DLL {dllName}.dll created from files at {fbd.SelectedPath}", DateTime.Now, 0, null, Errors.Ok);
                         }
                         else
                         {
                             DMEEditor.AddLogMessage("Fail", $"Failed to create DLL {dllName}: {result}", DateTime.Now, 0, null, Errors.Failed);
+                            MessageBox.Show(
+                                $"Failed to create DLL {dllName}:\n{result}",
+                                "DLL Creation Failed",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
                         }
+                    }
+                    else
+                    {
+                        DMEEditor.AddLogMessage("Info", "DLL creation canceled: No directory selected", DateTime.Now, 0, null, Errors.Ok);
                     }
                 }
             }
             catch (Exception ex)
             {
                 DMEEditor.AddLogMessage("Fail", $"Error creating DLL from files: {ex.Message}", DateTime.Now, 0, Passedarguments.DatasourceName, Errors.Failed);
+                MessageBox.Show($"Error creating DLL from files: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
             return DMEEditor.ErrorObject;
         }
-
+        /// <summary>
+        /// Generates a C# interface based on user input and a sample entity structure.
+        /// </summary>
+        /// <param name="Passedarguments">Arguments passed to the command.</param>
+        /// <returns>An IErrorsInfo object containing any errors that occurred during execution.</returns>
+        /// <remarks>
+        /// This command allows developers to quickly generate a C# interface by:
+        /// 1. Prompting for the interface name (without the 'I' prefix)
+        /// 2. Prompting for the namespace
+        /// 3. Optionally selecting an output directory for the generated file
+        /// 
+        /// The generated interface includes:
+        /// - Standard C# interface syntax
+        /// - Sample properties (Id and Description)
+        /// - The interface name will be prefixed with 'I'
+        /// 
+        /// Interfaces are useful for:
+        /// - Defining contracts for classes
+        /// - Supporting dependency injection and testability
+        /// - Enabling polymorphism and abstraction
+        /// 
+        /// If an output directory is selected, the interface will be saved to a file; otherwise,
+        /// the generated code will be displayed in a message box.
+        /// </remarks>
         [CommandAttribute(
             Caption = "Generate Interface",
             Name = "GenerateInterfaceCmd",
@@ -295,32 +719,59 @@ namespace Beep.DeveloperAssistant.MenuCommands
             DMEEditor.ErrorObject.Flag = Errors.Ok;
             try
             {
+                // Prompt for interface name (without 'I' prefix)
                 string className = Microsoft.VisualBasic.Interaction.InputBox("Enter interface name (without 'I'):", "Generate Interface", "MyInterface");
-                string namespaceName = Microsoft.VisualBasic.Interaction.InputBox("Enter namespace:", "Namespace", "MyApp.Interfaces");
-                using (OpenFileDialog ofd = new OpenFileDialog { Filter = "All files (*.*)|*.*", Title = "Select output directory (optional)" })
+                if (string.IsNullOrEmpty(className))
                 {
-                    if (!string.IsNullOrEmpty(className) && !string.IsNullOrEmpty(namespaceName))
-                    {
-                        var entity = new EntityStructure
-                        {
-                            EntityName = className,
-                            Fields = new List<EntityField>
-                            {
-                                new EntityField { fieldname = "Id", fieldtype = "int" },
-                                new EntityField { fieldname = "Description", fieldtype = "string" }
-                            }
-                        };
+                    DMEEditor.AddLogMessage("Info", "Interface generation canceled: No interface name provided", DateTime.Now, 0, null, Errors.Ok);
+                    return DMEEditor.ErrorObject;
+                }
 
-                        string code = _classCreator.GenerateInterfaceFromEntity(entity, namespaceName, ofd.ShowDialog() == DialogResult.OK, Path.GetDirectoryName(ofd.FileName));
-                        if (code != null)
+                // Prompt for namespace
+                string namespaceName = Microsoft.VisualBasic.Interaction.InputBox("Enter namespace:", "Namespace", "MyApp.Interfaces");
+                if (string.IsNullOrEmpty(namespaceName))
+                {
+                    DMEEditor.AddLogMessage("Info", "Interface generation canceled: No namespace provided", DateTime.Now, 0, null, Errors.Ok);
+                    return DMEEditor.ErrorObject;
+                }
+
+                // Optional: select output directory
+                using (OpenFileDialog ofd = new OpenFileDialog
+                {
+                    Filter = "All files (*.*)|*.*",
+                    Title = "Select output directory (optional)",
+                    CheckFileExists = false
+                })
+                {
+                    string outputPath = null;
+                    bool saveToFile = false;
+                    if (ofd.ShowDialog() == DialogResult.OK)
+                    {
+                        outputPath = Path.GetDirectoryName(ofd.FileName);
+                        saveToFile = true;
+                    }
+
+                    // Define sample entity structure for the interface
+                    var entity = new EntityStructure
+                    {
+                        EntityName = className,
+                        Fields = new List<EntityField>
                         {
-                            MessageBox.Show($"Generated Interface:\n{code}", "Interface Generated", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            DMEEditor.AddLogMessage("Success", $"Interface I{className} generated", DateTime.Now, 0, null, Errors.Ok);
+                            new EntityField { fieldname = "Id", fieldtype = "int" },
+                            new EntityField { fieldname = "Description", fieldtype = "string" }
                         }
-                        else
-                        {
-                            DMEEditor.AddLogMessage("Fail", $"Failed to generate interface I{className}", DateTime.Now, 0, null, Errors.Failed);
-                        }
+                    };
+
+                    // Generate the interface code
+                    string code = _classCreator.GenerateInterfaceFromEntity(entity, namespaceName, saveToFile, outputPath);
+                    if (code != null)
+                    {
+                        MessageBox.Show($"Generated Interface:\n{code}", "Interface Generated", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        DMEEditor.AddLogMessage("Success", $"Interface I{className} generated", DateTime.Now, 0, null, Errors.Ok);
+                    }
+                    else
+                    {
+                        DMEEditor.AddLogMessage("Fail", $"Failed to generate interface I{className}", DateTime.Now, 0, null, Errors.Failed);
                     }
                 }
             }
@@ -330,7 +781,32 @@ namespace Beep.DeveloperAssistant.MenuCommands
             }
             return DMEEditor.ErrorObject;
         }
-
+       
+        /// <summary>
+        /// Generates a C# partial class based on user input and optional additional methods.
+        /// </summary>
+        /// <param name="Passedarguments">Arguments passed to the command.</param>
+        /// <returns>An IErrorsInfo object containing any errors that occurred during execution.</returns>
+        /// <remarks>
+        /// This command allows developers to quickly generate a C# partial class by:
+        /// 1. Prompting for the class name
+        /// 2. Prompting for the namespace
+        /// 3. Prompting for additional methods (optional)
+        /// 4. Optionally selecting an output directory for the generated file
+        /// 
+        /// The generated partial class includes:
+        /// - Standard C# partial class syntax
+        /// - Any additional methods provided by the user
+        /// - No default properties unless specified in the methods input
+        /// 
+        /// Partial classes are useful for:
+        /// - Splitting class definitions across multiple files
+        /// - Organizing large or auto-generated codebases
+        /// - Enabling code generation tools to extend classes without modifying user code
+        /// 
+        /// If an output directory is selected, the class will be saved to a file; otherwise,
+        /// the generated code will be displayed in a message box.
+        /// </remarks>
         [CommandAttribute(
             Caption = "Generate Partial Class",
             Name = "GeneratePartialClassCmd",
@@ -344,24 +820,54 @@ namespace Beep.DeveloperAssistant.MenuCommands
             DMEEditor.ErrorObject.Flag = Errors.Ok;
             try
             {
+                // Prompt for class name with validation
                 string className = Microsoft.VisualBasic.Interaction.InputBox("Enter class name:", "Generate Partial Class", "MyPartialClass");
-                string namespaceName = Microsoft.VisualBasic.Interaction.InputBox("Enter namespace:", "Namespace", "MyApp.Partials");
-                string methods = Microsoft.VisualBasic.Interaction.InputBox("Enter additional methods (optional):", "Methods", "public void DoSomething() { }");
-                using (OpenFileDialog ofd = new OpenFileDialog { Filter = "All files (*.*)|*.*", Title = "Select output directory (optional)" })
+                if (string.IsNullOrEmpty(className))
                 {
-                    if (!string.IsNullOrEmpty(className) && !string.IsNullOrEmpty(namespaceName))
+                    DMEEditor.AddLogMessage("Info", "Partial class generation canceled: No class name provided", DateTime.Now, 0, null, Errors.Ok);
+                    return DMEEditor.ErrorObject;
+                }
+
+                // Prompt for namespace with validation
+                string namespaceName = Microsoft.VisualBasic.Interaction.InputBox("Enter namespace:", "Namespace", "MyApp.Partials");
+                if (string.IsNullOrEmpty(namespaceName))
+                {
+                    DMEEditor.AddLogMessage("Info", "Partial class generation canceled: No namespace provided", DateTime.Now, 0, null, Errors.Ok);
+                    return DMEEditor.ErrorObject;
+                }
+
+                // Prompt for additional methods (optional)
+                string methods = Microsoft.VisualBasic.Interaction.InputBox("Enter additional methods (optional):", "Methods", "public void DoSomething() { }");
+
+                // Optional: select output directory
+                using (OpenFileDialog ofd = new OpenFileDialog
+                {
+                    Filter = "All files (*.*)|*.*",
+                    Title = "Select output directory (optional)",
+                    CheckFileExists = false
+                })
+                {
+                    string outputPath = null;
+                    bool saveToFile = false;
+                    if (ofd.ShowDialog() == DialogResult.OK)
                     {
-                        var entity = new EntityStructure { EntityName = className, Fields = new List<EntityField>() };
-                        string code = _classCreator.GeneratePartialClass(entity, namespaceName, methods, ofd.ShowDialog() == DialogResult.OK, Path.GetDirectoryName(ofd.FileName));
-                        if (code != null)
-                        {
-                            MessageBox.Show($"Generated Partial Class:\n{code}", "Partial Class Generated", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            DMEEditor.AddLogMessage("Success", $"Partial class {className} generated", DateTime.Now, 0, null, Errors.Ok);
-                        }
-                        else
-                        {
-                            DMEEditor.AddLogMessage("Fail", $"Failed to generate partial class {className}", DateTime.Now, 0, null, Errors.Failed);
-                        }
+                        outputPath = Path.GetDirectoryName(ofd.FileName);
+                        saveToFile = true;
+                    }
+
+                    // Define entity structure for the partial class (no default fields)
+                    var entity = new EntityStructure { EntityName = className, Fields = new List<EntityField>() };
+
+                    // Generate the partial class code
+                    string code = _classCreator.GeneratePartialClass(entity, namespaceName, methods, saveToFile, outputPath);
+                    if (code != null)
+                    {
+                        MessageBox.Show($"Generated Partial Class:\n{code}", "Partial Class Generated", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        DMEEditor.AddLogMessage("Success", $"Partial class {className} generated", DateTime.Now, 0, null, Errors.Ok);
+                    }
+                    else
+                    {
+                        DMEEditor.AddLogMessage("Fail", $"Failed to generate partial class {className}", DateTime.Now, 0, null, Errors.Failed);
                     }
                 }
             }
@@ -371,7 +877,30 @@ namespace Beep.DeveloperAssistant.MenuCommands
             }
             return DMEEditor.ErrorObject;
         }
-
+        /// <summary>
+        /// Generates a C# class with custom attributes on its properties based on user input.
+        /// </summary>
+        /// <param name="Passedarguments">Arguments passed to the command.</param>
+        /// <returns>An IErrorsInfo object containing any errors that occurred during execution.</returns>
+        /// <remarks>
+        /// This command allows developers to quickly generate a C# class with attributes by:
+        /// 1. Prompting for the class name
+        /// 2. Prompting for the namespace
+        /// 3. Optionally selecting an output directory for the generated file
+        /// 
+        /// The generated class includes:
+        /// - Standard C# class syntax
+        /// - Sample properties (Id and Name)
+        /// - Custom attributes applied to each property (e.g., [Key] for Id, [Required] for others)
+        /// 
+        /// Classes with attributes are useful for:
+        /// - Data annotation for validation or ORM mapping
+        /// - Enabling frameworks like Entity Framework or ASP.NET validation
+        /// - Adding metadata to properties for code generation or runtime reflection
+        /// 
+        /// If an output directory is selected, the class will be saved to a file; otherwise,
+        /// the generated code will be displayed in a message box.
+        /// </remarks>
         [CommandAttribute(
             Caption = "Generate Class with Attributes",
             Name = "GenerateClassWithAttributesCmd",
@@ -385,35 +914,63 @@ namespace Beep.DeveloperAssistant.MenuCommands
             DMEEditor.ErrorObject.Flag = Errors.Ok;
             try
             {
+                // Prompt for class name with validation
                 string className = Microsoft.VisualBasic.Interaction.InputBox("Enter class name:", "Generate Class with Attributes", "MyAttributedClass");
-                string namespaceName = Microsoft.VisualBasic.Interaction.InputBox("Enter namespace:", "Namespace", "MyApp.Models");
-                using (OpenFileDialog ofd = new OpenFileDialog { Filter = "All files (*.*)|*.*", Title = "Select output directory (optional)" })
+                if (string.IsNullOrEmpty(className))
                 {
-                    if (!string.IsNullOrEmpty(className) && !string.IsNullOrEmpty(namespaceName))
+                    DMEEditor.AddLogMessage("Info", "Class with attributes generation canceled: No class name provided", DateTime.Now, 0, null, Errors.Ok);
+                    return DMEEditor.ErrorObject;
+                }
+
+                // Prompt for namespace with validation
+                string namespaceName = Microsoft.VisualBasic.Interaction.InputBox("Enter namespace:", "Namespace", "MyApp.Models");
+                if (string.IsNullOrEmpty(namespaceName))
+                {
+                    DMEEditor.AddLogMessage("Info", "Class with attributes generation canceled: No namespace provided", DateTime.Now, 0, null, Errors.Ok);
+                    return DMEEditor.ErrorObject;
+                }
+
+                // Optional: select output directory
+                using (OpenFileDialog ofd = new OpenFileDialog
+                {
+                    Filter = "All files (*.*)|*.*",
+                    Title = "Select output directory (optional)",
+                    CheckFileExists = false
+                })
+                {
+                    string outputPath = null;
+                    bool saveToFile = false;
+                    if (ofd.ShowDialog() == DialogResult.OK)
                     {
-                        var entity = new EntityStructure
-                        {
-                            EntityName = className,
-                            Fields = new List<EntityField>
-                            {
-                                new EntityField { fieldname = "Id", fieldtype = "int" },
-                                new EntityField { fieldname = "Name", fieldtype = "string" }
-                            }
-                        };
+                        outputPath = Path.GetDirectoryName(ofd.FileName);
+                        saveToFile = true;
+                    }
 
-                        Func<EntityField, IEnumerable<string>> attributes = field =>
-                            field.fieldname == "Id" ? new[] { "[Key]" } : new[] { "[Required]" };
+                    // Define entity structure with sample properties
+                    var entity = new EntityStructure
+                    {
+                        EntityName = className,
+                        Fields = new List<EntityField>
+                        {
+                            new EntityField { fieldname = "Id", fieldtype = "int" },
+                            new EntityField { fieldname = "Name", fieldtype = "string" }
+                        }
+                    };
 
-                        string code = _classCreator.GenerateClassWithCustomAttributes(entity, namespaceName, attributes, ofd.ShowDialog() == DialogResult.OK, Path.GetDirectoryName(ofd.FileName));
-                        if (code != null)
-                        {
-                            MessageBox.Show($"Generated Class with Attributes:\n{code}", "Class Generated", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            DMEEditor.AddLogMessage("Success", $"Class {className} with attributes generated", DateTime.Now, 0, null, Errors.Ok);
-                        }
-                        else
-                        {
-                            DMEEditor.AddLogMessage("Fail", $"Failed to generate class {className} with attributes", DateTime.Now, 0, null, Errors.Failed);
-                        }
+                    // Define attribute logic for each property
+                    Func<EntityField, IEnumerable<string>> attributes = field =>
+                        field.fieldname == "Id" ? new[] { "[Key]" } : new[] { "[Required]" };
+
+                    // Generate the class with attributes
+                    string code = _classCreator.GenerateClassWithCustomAttributes(entity, namespaceName, attributes, saveToFile, outputPath);
+                    if (code != null)
+                    {
+                        MessageBox.Show($"Generated Class with Attributes:\n{code}", "Class Generated", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        DMEEditor.AddLogMessage("Success", $"Class {className} with attributes generated", DateTime.Now, 0, null, Errors.Ok);
+                    }
+                    else
+                    {
+                        DMEEditor.AddLogMessage("Fail", $"Failed to generate class {className} with attributes", DateTime.Now, 0, null, Errors.Failed);
                     }
                 }
             }
@@ -423,7 +980,6 @@ namespace Beep.DeveloperAssistant.MenuCommands
             }
             return DMEEditor.ErrorObject;
         }
-
         [CommandAttribute(
             Caption = "Merge Partial Class",
             Name = "MergePartialClassCmd",
