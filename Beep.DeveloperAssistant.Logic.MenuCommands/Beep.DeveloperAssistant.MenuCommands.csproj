@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net8.0-windows</TargetFrameworks>
+    <TargetFrameworks>net9.0-windows</TargetFrameworks>
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
 	  <ImplicitUsings>enable</ImplicitUsings>
@@ -45,8 +45,8 @@
 		<Copy SourceFiles="$(TargetDir)$(PackageId).dll" DestinationFolder="$(ProjectDir)..\..\outputDLL\$(PackageId)\$(TargetFramework)" SkipUnchangedFiles="false" />
 	</Target>
   <ItemGroup>
-    <PackageReference Include="TheTechIdea.Beep.DataManagementModels" Version="2.0.69" />
-    <PackageReference Include="TheTechIdea.Beep.Vis.Modules" Version="2.0.7" />
+    <PackageReference Include="TheTechIdea.Beep.DataManagementModels" Version="2.0.70" />
+    <PackageReference Include="TheTechIdea.Beep.Vis.Modules" Version="2.0.20" />
     <PackageReference Include="TheTechIdea.Beep.Winform.Extensions" Version="1.0.8" />
   </ItemGroup>
 
