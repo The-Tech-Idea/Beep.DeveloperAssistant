@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net9.0-windows</TargetFrameworks>
+    <TargetFrameworks>net8.0-windows</TargetFrameworks>
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
 	  <ImplicitUsings>enable</ImplicitUsings>
@@ -38,15 +38,30 @@
 			<PackagePath>\</PackagePath>
 		</None>
 	</ItemGroup>
-	<Target Name="CopyPackage" AfterTargets="Pack">
-		<Copy SourceFiles="$(OutputPath)$(PackageId).$(PackageVersion).nupkg" DestinationFolder="..\..\..\LocalNugetFiles" />
+	<PropertyGroup>
+		<!-- Don’t pack on design-time builds -->
+		<GeneratePackageOnBuild Condition="'$(DesignTimeBuild)' != 'true'">True</GeneratePackageOnBuild>
+	</PropertyGroup>
+	<Target Name="CopyPackage" AfterTargets="Pack" Condition="'$(DesignTimeBuild)' != 'true'">
+		<PropertyGroup>
+			<_PkgName>$(PackageId).$(PackageVersion).nupkg</_PkgName>
+			<!-- Pack writes to $(PackageOutputPath); default is bin\<Configuration>\ -->
+			<_PkgPath>$(PackageOutputPath)\$(_PkgName)</_PkgPath>
+			<_Dest>$(ProjectDir)..\..\..\LocalNugetFiles</_Dest>
+		</PropertyGroup>
+
+		<!-- Ensure destination exists -->
+		<MakeDir Directories="$(_Dest)" Condition="!Exists('$(_Dest)')" />
+
+		<!-- Copy only if the package exists -->
+		<Copy SourceFiles="$(_PkgPath)" DestinationFolder="$(_Dest)" SkipUnchangedFiles="true" Condition="Exists('$(_PkgPath)')" />
 	</Target>
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
 		<Copy SourceFiles="$(TargetDir)$(PackageId).dll" DestinationFolder="$(ProjectDir)..\..\outputDLL\$(PackageId)\$(TargetFramework)" SkipUnchangedFiles="false" />
 	</Target>
   <ItemGroup>
-    <PackageReference Include="TheTechIdea.Beep.DataManagementModels" Version="2.0.70" />
-    <PackageReference Include="TheTechIdea.Beep.Vis.Modules" Version="2.0.20" />
+    <PackageReference Include="TheTechIdea.Beep.DataManagementModels" Version="2.0.76" />
+    <PackageReference Include="TheTechIdea.Beep.Vis.Modules" Version="2.0.22" />
     <PackageReference Include="TheTechIdea.Beep.Winform.Extensions" Version="1.0.8" />
   </ItemGroup>
 
