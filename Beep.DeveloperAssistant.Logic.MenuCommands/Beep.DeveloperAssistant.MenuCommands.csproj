@@ -61,7 +61,7 @@
 	</Target>
   <ItemGroup>
     <PackageReference Include="TheTechIdea.Beep.DataManagementModels" Version="2.0.102" />
-    <PackageReference Include="TheTechIdea.Beep.Vis.Modules" Version="2.0.32" />
+    <PackageReference Include="TheTechIdea.Beep.Vis.Modules" Version="2.0.33" />
     <PackageReference Include="TheTechIdea.Beep.Winform.Extensions" Version="1.0.8" />
   </ItemGroup>
 
