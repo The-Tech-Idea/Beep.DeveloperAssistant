@@ -122,8 +122,8 @@ namespace Beep.DeveloperAssistant.MenuCommands
                         EntityName = className,
                         Fields = new List<EntityField>
                 {
-                    new EntityField { fieldname = "Id", fieldtype = "int" },
-                    new EntityField { fieldname = "Name", fieldtype = "string" }
+                    new EntityField {FieldName = "Id", Fieldtype = "int" },
+                    new EntityField {FieldName = "Name", Fieldtype = "string" }
                 }
                     };
 
@@ -240,8 +240,8 @@ namespace Beep.DeveloperAssistant.MenuCommands
                         EntityName = className,
                         Fields = new List<EntityField>
                 {
-                    new EntityField { fieldname = "Id", fieldtype = "int" },
-                    new EntityField { fieldname = "Name", fieldtype = "string" }
+                    new EntityField {FieldName = "Id", Fieldtype = "int" },
+                    new EntityField {FieldName = "Name", Fieldtype = "string" }
                 }
                     };
 
@@ -360,8 +360,8 @@ namespace Beep.DeveloperAssistant.MenuCommands
                         EntityName = className,
                         Fields = new List<EntityField>
                 {
-                    new EntityField { fieldname = "Id", fieldtype = "int" },
-                    new EntityField { fieldname = "Name", fieldtype = "string" }
+                    new EntityField {FieldName = "Id", Fieldtype = "int" },
+                    new EntityField {FieldName = "Name", Fieldtype = "string" }
                 }
                     };
 
@@ -495,15 +495,15 @@ namespace Beep.DeveloperAssistant.MenuCommands
             new EntityStructure {
                 EntityName = "Sample1",
                 Fields = new List<EntityField> {
-                    new EntityField { fieldname = "Id", fieldtype = "int" },
-                    new EntityField { fieldname = "Name", fieldtype = "string" }
+                    new EntityField {FieldName = "Id", Fieldtype = "int" },
+                    new EntityField {FieldName = "Name", Fieldtype = "string" }
                 }
             },
             new EntityStructure {
                 EntityName = "Sample2",
                 Fields = new List<EntityField> {
-                    new EntityField { fieldname = "Code", fieldtype = "string" },
-                    new EntityField { fieldname = "Value", fieldtype = "double" }
+                    new EntityField {FieldName = "Code", Fieldtype = "string" },
+                    new EntityField {FieldName = "Value", Fieldtype = "double" }
                 }
             }
         };
@@ -757,8 +757,8 @@ namespace Beep.DeveloperAssistant.MenuCommands
                         EntityName = className,
                         Fields = new List<EntityField>
                         {
-                            new EntityField { fieldname = "Id", fieldtype = "int" },
-                            new EntityField { fieldname = "Description", fieldtype = "string" }
+                            new EntityField {FieldName = "Id", Fieldtype = "int" },
+                            new EntityField {FieldName = "Description", Fieldtype = "string" }
                         }
                     };
 
@@ -952,14 +952,14 @@ namespace Beep.DeveloperAssistant.MenuCommands
                         EntityName = className,
                         Fields = new List<EntityField>
                         {
-                            new EntityField { fieldname = "Id", fieldtype = "int" },
-                            new EntityField { fieldname = "Name", fieldtype = "string" }
+                            new EntityField {FieldName = "Id", Fieldtype = "int" },
+                            new EntityField {FieldName = "Name", Fieldtype = "string" }
                         }
                     };
 
                     // Define attribute logic for each property
                     Func<EntityField, IEnumerable<string>> attributes = field =>
-                        field.fieldname == "Id" ? new[] { "[Key]" } : new[] { "[Required]" };
+                        field.FieldName == "Id" ? new[] { "[Key]" } : new[] { "[Required]" };
 
                     // Generate the class with attributes
                     string code = _classCreator.GenerateClassWithCustomAttributes(entity, namespaceName, attributes, saveToFile, outputPath);
@@ -1004,7 +1004,7 @@ namespace Beep.DeveloperAssistant.MenuCommands
                             EntityName = className,
                             Fields = new List<EntityField>
                             {
-                                new EntityField { fieldname = "NewField", fieldtype = "string" }
+                                new EntityField {FieldName = "NewField", Fieldtype = "string" }
                             }
                         };
 
@@ -1052,8 +1052,8 @@ namespace Beep.DeveloperAssistant.MenuCommands
                             EntityName = className,
                             Fields = new List<EntityField>
                             {
-                                new EntityField { fieldname = "Id", fieldtype = "int" },
-                                new EntityField { fieldname = "Name", fieldtype = "string" }
+                                new EntityField {FieldName = "Id", Fieldtype = "int" },
+                                new EntityField {FieldName = "Name", Fieldtype = "string" }
                             }
                         };
 
@@ -1101,8 +1101,8 @@ namespace Beep.DeveloperAssistant.MenuCommands
                             EntityName = className,
                             Fields = new List<EntityField>
                             {
-                                new EntityField { fieldname = "Id", fieldtype = "int" },
-                                new EntityField { fieldname = "Name", fieldtype = "string" }
+                                new EntityField {FieldName = "Id", Fieldtype = "int" },
+                                new EntityField {FieldName = "Name", Fieldtype = "string" }
                             }
                         };
 
@@ -1150,8 +1150,8 @@ namespace Beep.DeveloperAssistant.MenuCommands
                             EntityName = className,
                             Fields = new List<EntityField>
                             {
-                                new EntityField { fieldname = "Id", fieldtype = "int" },
-                                new EntityField { fieldname = "Name", fieldtype = "string" }
+                                new EntityField {FieldName = "Id", Fieldtype = "int" },
+                                new EntityField {FieldName = "Name", Fieldtype = "string" }
                             }
                         };
 
@@ -1199,8 +1199,8 @@ namespace Beep.DeveloperAssistant.MenuCommands
                             EntityName = className,
                             Fields = new List<EntityField>
                             {
-                                new EntityField { fieldname = "Id", fieldtype = "int" },
-                                new EntityField { fieldname = "Name", fieldtype = "string" }
+                                new EntityField {FieldName = "Id", Fieldtype = "int" },
+                                new EntityField {FieldName = "Name", Fieldtype = "string" }
                             }
                         };
 
@@ -1249,8 +1249,8 @@ namespace Beep.DeveloperAssistant.MenuCommands
                             EntityName = className,
                             Fields = new List<EntityField>
                             {
-                                new EntityField { fieldname = "Id", fieldtype = "int" },
-                                new EntityField { fieldname = "Name", fieldtype = "string" }
+                                new EntityField {FieldName = "Id", Fieldtype = "int" },
+                                new EntityField {FieldName = "Name", Fieldtype = "string" }
                             }
                         };
 
@@ -1299,8 +1299,8 @@ namespace Beep.DeveloperAssistant.MenuCommands
                             EntityName = pageName,
                             Fields = new List<EntityField>
                             {
-                                new EntityField { fieldname = "Id", fieldtype = "int" },
-                                new EntityField { fieldname = "Name", fieldtype = "string" }
+                                new EntityField {FieldName = "Id", Fieldtype = "int" },
+                                new EntityField {FieldName = "Name", Fieldtype = "string" }
                             }
                         };
 
@@ -1349,8 +1349,8 @@ namespace Beep.DeveloperAssistant.MenuCommands
                             EntityName = componentName,
                             Fields = new List<EntityField>
                             {
-                                new EntityField { fieldname = "Id", fieldtype = "int" },
-                                new EntityField { fieldname = "Name", fieldtype = "string" }
+                                new EntityField {FieldName = "Id", Fieldtype = "int" },
+                                new EntityField {FieldName = "Name", Fieldtype = "string" }
                             }
                         };
 
@@ -1473,7 +1473,7 @@ namespace Beep.DeveloperAssistant.MenuCommands
                             EntityName = Path.GetFileNameWithoutExtension(ofd.FileName),
                             Fields = new List<EntityField>
                             {
-                                new EntityField { fieldname = "NewProp", fieldtype = "string" }
+                                new EntityField {FieldName = "NewProp", Fieldtype = "string" }
                             }
                         };
 

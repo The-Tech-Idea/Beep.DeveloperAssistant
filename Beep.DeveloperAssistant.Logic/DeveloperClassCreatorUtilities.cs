@@ -265,8 +265,8 @@ namespace Beep.DeveloperAssistant.Logic
 
             foreach (var item in entityStructure.Fields)
             {
-                string content = codeTemplates.Code.Replace("{field}", item.fieldname)
-                                               .Replace("{field_type}", item.fieldtype)
+                string content = codeTemplates.Code.Replace("{field}", item.FieldName)
+                                               .Replace("{field_type}", item.Fieldtype)
                                                .Replace("{entity}", entityStructure.EntityName)
                                                .Replace("{datasource}", entityStructure.DataSourceID);
                 classBuilder.AppendLine(content);
@@ -297,8 +297,8 @@ namespace Beep.DeveloperAssistant.Logic
             {
                 foreach (var item in entity.Fields)
                 {
-                    string content = codeTemplates.Code.Replace("{field}", item.fieldname)
-                                                   .Replace("{field_type}", item.fieldtype)
+                    string content = codeTemplates.Code.Replace("{field}", item.FieldName)
+                                                   .Replace("{field_type}", item.Fieldtype)
                                                    .Replace("{entity}", entity.EntityName)
                                                    .Replace("{datasource}", entity.DataSourceID);
                     classBuilder.AppendLine(content);
@@ -519,7 +519,7 @@ public :FIELDTYPE :FIELDNAME
 
                 foreach (var ef in entity.Fields)
                 {
-                    string fieldCode = string.IsNullOrEmpty(template) ? $"        public {ef.fieldtype}? {ef.fieldname}" : template.Replace(":FIELDNAME", ef.fieldname).Replace(":FIELDTYPE", ef.fieldtype + "?");
+                    string fieldCode = string.IsNullOrEmpty(template) ? $"        public {ef.Fieldtype}? {ef.FieldName}" : template.Replace(":FIELDNAME", ef.FieldName).Replace(":FIELDTYPE", ef.Fieldtype + "?");
                     code.AppendLine(fieldCode);
                 }
 
@@ -582,7 +582,7 @@ public :FIELDTYPE :FIELDNAME
 
                 foreach (var ef in entity.Fields)
                 {
-                    string fieldCode = string.IsNullOrEmpty(template) ? $"        public {ef.fieldtype}? {ef.fieldname}" : template.Replace(":FIELDNAME", ef.fieldname).Replace(":FIELDTYPE", ef.fieldtype + "?");
+                    string fieldCode = string.IsNullOrEmpty(template) ? $"        public {ef.Fieldtype}? {ef.FieldName}" : template.Replace(":FIELDNAME", ef.FieldName).Replace(":FIELDTYPE", ef.Fieldtype + "?");
                     code.AppendLine(fieldCode);
                 }
 
@@ -696,10 +696,10 @@ public {propertyType} {propertyName}
             sb.AppendLine($"public class {classname} : Entity {{");
             foreach (var item in entityStructure.Fields)
             {
-                sb.AppendLine($"private {item.fieldtype} _{item.fieldname.ToLower()};");
-                sb.AppendLine($"public {item.fieldtype} {item.fieldname} {{");
-                sb.AppendLine($"    get {{ return _{item.fieldname.ToLower()}; }}");
-                sb.AppendLine($"    set {{ SetProperty(ref _{item.fieldname.ToLower()}, value); }}");
+                sb.AppendLine($"private {item.Fieldtype} _{item.FieldName.ToLower()};");
+                sb.AppendLine($"public {item.Fieldtype} {item.FieldName} {{");
+                sb.AppendLine($"    get {{ return _{item.FieldName.ToLower()}; }}");
+                sb.AppendLine($"    set {{ SetProperty(ref _{item.FieldName.ToLower()}, value); }}");
                 sb.AppendLine("}");
             }
             sb.AppendLine("}}");
@@ -737,7 +737,7 @@ public {propertyType} {propertyName}
             sb.AppendLine($"    public interface I{entityStructure.EntityName} {{");
             foreach (var field in entityStructure.Fields)
             {
-                sb.AppendLine($"        {field.fieldtype} {field.fieldname} {{ get; set; }}");
+                sb.AppendLine($"        {field.Fieldtype} {field.FieldName} {{ get; set; }}");
             }
             sb.AppendLine("    }}");
 
@@ -800,7 +800,7 @@ public {propertyType} {propertyName}
                         sb.AppendLine($"        {attr}");
                     }
                 }
-                sb.AppendLine($"        public {field.fieldtype} {field.fieldname} {{ get; set; }}");
+                sb.AppendLine($"        public {field.Fieldtype} {field.FieldName} {{ get; set; }}");
                 sb.AppendLine();
             }
             sb.AppendLine("    }}");
@@ -832,7 +832,7 @@ public {propertyType} {propertyName}
                         StringBuilder newMembers = new StringBuilder();
                         foreach (var ef in entity.Fields)
                         {
-                            string property = template.Replace(":FIELDNAME", ef.fieldname).Replace(":FIELDTYPE", ef.fieldtype + "?");
+                            string property = template.Replace(":FIELDNAME", ef.FieldName).Replace(":FIELDTYPE", ef.Fieldtype + "?");
                             newMembers.AppendLine($"        {property}");
                         }
                         var newClassDecl = classDecl.AddMembers(SyntaxFactory.ParseMemberDeclaration(newMembers.ToString()));
@@ -920,9 +920,9 @@ public {propertyType} {propertyName}
                 code.AppendLine($"            var instance = new {classname}();");
                 foreach (var field in entity.Fields.Take(1))
                 {
-                    string testValue = field.fieldtype == "string" ? "\"test\"" : "default";
-                    code.AppendLine($"            instance.{field.fieldname} = {testValue};");
-                    code.AppendLine($"            Assert.Equal({testValue}, instance.{field.fieldname});");
+                    string testValue = field.Fieldtype == "string" ? "\"test\"" : "default";
+                    code.AppendLine($"            instance.{field.FieldName} = {testValue};");
+                    code.AppendLine($"            Assert.Equal({testValue}, instance.{field.FieldName});");
                 }
                 code.AppendLine("        }}");
                 code.AppendLine("    }}");
@@ -964,9 +964,9 @@ public {propertyType} {propertyName}
             for (int i = 0; i < entityStructure.Fields.Count; i++)
             {
                 var field = entityStructure.Fields[i];
-                string labelName = $"lbl{field.fieldname}";
-                string textBoxName = $"txt{field.fieldname}";
-                sb.AppendLine($"            var {labelName} = new Label {{ AutoSize = true, Location = new System.Drawing.Point(20, {topOffset}), Name = \"{labelName}\", Text = \"{field.fieldname}\" }};");
+                string labelName = $"lbl{field.FieldName}";
+                string textBoxName = $"txt{field.FieldName}";
+                sb.AppendLine($"            var {labelName} = new Label {{ AutoSize = true, Location = new System.Drawing.Point(20, {topOffset}), Name = \"{labelName}\", Text = \"{field.FieldName}\" }};");
                 sb.AppendLine($"            var {textBoxName} = new TextBox {{ Location = new System.Drawing.Point(120, {topOffset - 4}), Name = \"{textBoxName}\", Size = new System.Drawing.Size(200, 20) }};");
                 sb.AppendLine($"            this.Controls.Add({labelName});");
                 sb.AppendLine($"            this.Controls.Add({textBoxName});");
@@ -1042,8 +1042,8 @@ public {propertyType} {propertyName}
             foreach (var field in entityStructure.Fields)
             {
                 sb.AppendLine("    <div class=\"form-group\">");
-                sb.AppendLine($"        <label asp-for=\"Entity.{field.fieldname}\"></label>");
-                sb.AppendLine($"        <input asp-for=\"Entity.{field.fieldname}\" class=\"form-control\" />");
+                sb.AppendLine($"        <label asp-for=\"Entity.{field.FieldName}\"></label>");
+                sb.AppendLine($"        <input asp-for=\"Entity.{field.FieldName}\" class=\"form-control\" />");
                 sb.AppendLine("    </div>");
             }
             sb.AppendLine("    <button type=\"submit\" class=\"btn btn-primary\">Save</button>");
@@ -1107,8 +1107,8 @@ public {propertyType} {propertyName}
             foreach (var field in entityStructure.Fields)
             {
                 sb.AppendLine("    <div class=\"mb-3\">");
-                sb.AppendLine($"        <label>{field.fieldname}</label><br />");
-                sb.AppendLine($"        <InputText @bind-Value=\"Entity.{field.fieldname}\" />");
+                sb.AppendLine($"        <label>{field.FieldName}</label><br />");
+                sb.AppendLine($"        <InputText @bind-Value=\"Entity.{field.FieldName}\" />");
                 sb.AppendLine("    </div>");
             }
             sb.AppendLine("    <button type=\"submit\" class=\"btn btn-primary\">Save</button>");
@@ -1251,12 +1251,12 @@ EndGlobal
             StringBuilder sb = new StringBuilder(originalCode);
             foreach (var field in updatedEntity.Fields)
             {
-                if (!originalCode.Contains($"public {field.fieldtype} {field.fieldname}"))
+                if (!originalCode.Contains($"public {field.Fieldtype} {field.FieldName}"))
                 {
                     int classEndIndex = sb.ToString().LastIndexOf('}');
                     if (classEndIndex > 0)
                     {
-                        sb.Insert(classEndIndex, $"    public {field.fieldtype} {field.fieldname} {{ get; set; }}\n");
+                        sb.Insert(classEndIndex, $"    public {field.Fieldtype} {field.FieldName} {{ get; set; }}\n");
                     }
                 }
             }
