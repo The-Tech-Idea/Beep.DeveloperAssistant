@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -50,6 +50,28 @@ namespace Beep.DeveloperAssistantMenuCommands
         }
         private ITree tree;
         public IFunctionandExtensionsHelpers ExtensionsHelpers { get; set; }
+
+        private string PromptInput(string title, string promptText, string defaultValue = "")
+        {
+            var dialogManager = ExtensionsHelpers?.Vismanager?.DialogManager;
+            if (dialogManager == null)
+            {
+                return defaultValue;
+            }
+
+            var result = dialogManager.InputBoxAsync(title, promptText).GetAwaiter().GetResult();
+            if (result.Result != BeepDialogResult.OK)
+            {
+                return string.Empty;
+            }
+
+            if (string.IsNullOrWhiteSpace(result.Value))
+            {
+                return defaultValue;
+            }
+
+            return result.Value;
+        }
         #region Commands for DeveloperWebUtilities
 
         [CommandAttribute(
@@ -65,7 +87,7 @@ namespace Beep.DeveloperAssistantMenuCommands
             DMEEditor.ErrorObject.Flag = Errors.Ok;
             try
             {
-                string url = Microsoft.VisualBasic.Interaction.InputBox("Enter URL:", "Get Text", "https://example.com");
+                string url = PromptInput("Get Text", "Enter URL:", "https://example.com");
                 if (!string.IsNullOrEmpty(url))
                 {
                     var (content, headers) = await _webUtil.GetTextAsync(url);
@@ -100,7 +122,7 @@ namespace Beep.DeveloperAssistantMenuCommands
             DMEEditor.ErrorObject.Flag = Errors.Ok;
             try
             {
-                string url = Microsoft.VisualBasic.Interaction.InputBox("Enter URL:", "Get Lines", "https://example.com/lines.txt");
+                string url = PromptInput("Get Lines", "Enter URL:", "https://example.com/lines.txt");
                 if (!string.IsNullOrEmpty(url))
                 {
                     var lines = await _webUtil.GetLinesAsync(url);
@@ -135,7 +157,7 @@ namespace Beep.DeveloperAssistantMenuCommands
             DMEEditor.ErrorObject.Flag = Errors.Ok;
             try
             {
-                string url = Microsoft.VisualBasic.Interaction.InputBox("Enter URL to download:", "Download File", "https://example.com/file.zip");
+                string url = PromptInput("Download File", "Enter URL to download:", "https://example.com/file.zip");
                 using (SaveFileDialog sfd = new SaveFileDialog { Filter = "All files (*.*)|*.*", Title = "Save downloaded file" })
                 {
                     if (!string.IsNullOrEmpty(url) && sfd.ShowDialog() == DialogResult.OK)
@@ -179,8 +201,8 @@ namespace Beep.DeveloperAssistantMenuCommands
             DMEEditor.ErrorObject.Flag = Errors.Ok;
             try
             {
-                string url = Microsoft.VisualBasic.Interaction.InputBox("Enter URL:", "Post Text", "https://example.com/api");
-                string content = Microsoft.VisualBasic.Interaction.InputBox("Enter text content to post:", "Post Content", "Hello, World!");
+                string url = PromptInput("Post Text", "Enter URL:", "https://example.com/api");
+                string content = PromptInput("Post Content", "Enter text content to post:", "Hello, World!");
                 if (!string.IsNullOrEmpty(url) && !string.IsNullOrEmpty(content))
                 {
                     var (response, headers) = await _webUtil.PostTextAsync(url, content);
@@ -215,8 +237,8 @@ namespace Beep.DeveloperAssistantMenuCommands
             DMEEditor.ErrorObject.Flag = Errors.Ok;
             try
             {
-                string url = Microsoft.VisualBasic.Interaction.InputBox("Enter URL:", "Post Form", "https://example.com/form");
-                string formDataStr = Microsoft.VisualBasic.Interaction.InputBox("Enter form data (key=value,key2=value2):", "Form Data", "name=John,age=30");
+                string url = PromptInput("Post Form", "Enter URL:", "https://example.com/form");
+                string formDataStr = PromptInput("Form Data", "Enter form data (key=value,key2=value2):", "name=John,age=30");
                 if (!string.IsNullOrEmpty(url) && !string.IsNullOrEmpty(formDataStr))
                 {
                     var formData = formDataStr.Split(',').Select(kv => kv.Split('=')).ToDictionary(kv => kv[0], kv => kv[1]);
@@ -252,8 +274,8 @@ namespace Beep.DeveloperAssistantMenuCommands
             DMEEditor.ErrorObject.Flag = Errors.Ok;
             try
             {
-                string url = Microsoft.VisualBasic.Interaction.InputBox("Enter URL:", "Post Multipart", "https://example.com/upload");
-                string formDataStr = Microsoft.VisualBasic.Interaction.InputBox("Enter form data (key=value,key2=value2, optional):", "Form Data", "description=Test");
+                string url = PromptInput("Post Multipart", "Enter URL:", "https://example.com/upload");
+                string formDataStr = PromptInput("Form Data", "Enter form data (key=value,key2=value2, optional):", "description=Test");
                 using (OpenFileDialog ofd = new OpenFileDialog { Filter = "All files (*.*)|*.*", Title = "Select file to upload" })
                 {
                     if (!string.IsNullOrEmpty(url) && ofd.ShowDialog() == DialogResult.OK)
@@ -293,8 +315,8 @@ namespace Beep.DeveloperAssistantMenuCommands
             DMEEditor.ErrorObject.Flag = Errors.Ok;
             try
             {
-                string url = Microsoft.VisualBasic.Interaction.InputBox("Enter URL:", "Put Text", "https://example.com/data/1");
-                string content = Microsoft.VisualBasic.Interaction.InputBox("Enter text content to put:", "Put Content", "Updated Data");
+                string url = PromptInput("Put Text", "Enter URL:", "https://example.com/data/1");
+                string content = PromptInput("Put Content", "Enter text content to put:", "Updated Data");
                 if (!string.IsNullOrEmpty(url) && !string.IsNullOrEmpty(content))
                 {
                     var (response, headers) = await _webUtil.PutTextAsync(url, content);
@@ -329,7 +351,7 @@ namespace Beep.DeveloperAssistantMenuCommands
             DMEEditor.ErrorObject.Flag = Errors.Ok;
             try
             {
-                string url = Microsoft.VisualBasic.Interaction.InputBox("Enter URL to delete:", "Delete Resource", "https://example.com/data/1");
+                string url = PromptInput("Delete Resource", "Enter URL to delete:", "https://example.com/data/1");
                 if (!string.IsNullOrEmpty(url))
                 {
                     var (response, headers) = await _webUtil.DeleteAsync(url);
@@ -364,7 +386,7 @@ namespace Beep.DeveloperAssistantMenuCommands
             DMEEditor.ErrorObject.Flag = Errors.Ok;
             try
             {
-                string url = Microsoft.VisualBasic.Interaction.InputBox("Enter URL:", "Get JSON", "https://example.com/data.json");
+                string url = PromptInput("Get JSON", "Enter URL:", "https://example.com/data.json");
                 if (!string.IsNullOrEmpty(url))
                 {
                     var data = await _webUtil.GetJsonAsync<Dictionary<string, string>>(url);
@@ -400,8 +422,8 @@ namespace Beep.DeveloperAssistantMenuCommands
             DMEEditor.ErrorObject.Flag = Errors.Ok;
             try
             {
-                string url = Microsoft.VisualBasic.Interaction.InputBox("Enter URL:", "Post JSON", "https://example.com/api");
-                string jsonData = Microsoft.VisualBasic.Interaction.InputBox("Enter JSON data (e.g., {\"key\":\"value\"}):", "JSON Data", "{\"name\":\"Test\"}");
+                string url = PromptInput("Post JSON", "Enter URL:", "https://example.com/api");
+                string jsonData = PromptInput("JSON Data", "Enter JSON data (e.g., {\"key\":\"value\"}):", "{\"name\":\"Test\"}");
                 if (!string.IsNullOrEmpty(url) && !string.IsNullOrEmpty(jsonData))
                 {
                     var requestData = JsonSerializer.Deserialize<Dictionary<string, string>>(jsonData);

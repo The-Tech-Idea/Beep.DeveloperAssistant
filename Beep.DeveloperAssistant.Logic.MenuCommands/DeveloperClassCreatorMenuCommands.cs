@@ -1,4 +1,4 @@
-﻿using Beep.DeveloperAssistant.Logic;
+using Beep.DeveloperAssistant.Logic;
 using Beep.DeveloperAssistant.Logic.Models;
 using System;
 using System.Collections.Generic;
@@ -53,6 +53,28 @@ namespace Beep.DeveloperAssistant.MenuCommands
         private ITree tree;
         public IFunctionandExtensionsHelpers ExtensionsHelpers { get; set; }
 
+        private string PromptInput(string title, string promptText, string defaultValue = "")
+        {
+            var dialogManager = ExtensionsHelpers?.Vismanager?.DialogManager;
+            if (dialogManager == null)
+            {
+                return defaultValue;
+            }
+
+            var result = dialogManager.InputBoxAsync(title, promptText).GetAwaiter().GetResult();
+            if (result.Result != BeepDialogResult.OK)
+            {
+                return string.Empty;
+            }
+
+            if (string.IsNullOrWhiteSpace(result.Value))
+            {
+                return defaultValue;
+            }
+
+            return result.Value;
+        }
+
         #region Commands
 
         /// <summary>
@@ -93,7 +115,7 @@ namespace Beep.DeveloperAssistant.MenuCommands
             try
             {
                 // Prompt for class name with validation
-                string className = Microsoft.VisualBasic.Interaction.InputBox("Enter class name:", "Create POCO Class", "MyClass");
+                string className = PromptInput("Create POCO Class", "Enter class name:", "MyClass");
                 if (string.IsNullOrEmpty(className))
                 {
                     DMEEditor.AddLogMessage("Info", "POCO class creation canceled: No class name provided", DateTime.Now, 0, null, Errors.Ok);
@@ -101,7 +123,7 @@ namespace Beep.DeveloperAssistant.MenuCommands
                 }
 
                 // Prompt for namespace with validation
-                string namespaceName = Microsoft.VisualBasic.Interaction.InputBox("Enter namespace:", "Namespace", "MyApp.Models");
+                string namespaceName = PromptInput("Namespace", "Enter namespace:", "MyApp.Models");
                 if (string.IsNullOrEmpty(namespaceName))
                 {
                     DMEEditor.AddLogMessage("Info", "POCO class creation canceled: No namespace provided", DateTime.Now, 0, null, Errors.Ok);
@@ -211,7 +233,7 @@ namespace Beep.DeveloperAssistant.MenuCommands
             try
             {
                 // Prompt for class name with validation
-                string className = Microsoft.VisualBasic.Interaction.InputBox("Enter class name:", "Create INotify Class", "MyNotifyClass");
+                string className = PromptInput("Create INotify Class", "Enter class name:", "MyNotifyClass");
                 if (string.IsNullOrEmpty(className))
                 {
                     DMEEditor.AddLogMessage("Info", "INotify class creation canceled: No class name provided", DateTime.Now, 0, null, Errors.Ok);
@@ -219,7 +241,7 @@ namespace Beep.DeveloperAssistant.MenuCommands
                 }
 
                 // Prompt for namespace with validation
-                string namespaceName = Microsoft.VisualBasic.Interaction.InputBox("Enter namespace:", "Namespace", "MyApp.Models");
+                string namespaceName = PromptInput("Namespace", "Enter namespace:", "MyApp.Models");
                 if (string.IsNullOrEmpty(namespaceName))
                 {
                     DMEEditor.AddLogMessage("Info", "INotify class creation canceled: No namespace provided", DateTime.Now, 0, null, Errors.Ok);
@@ -331,7 +353,7 @@ namespace Beep.DeveloperAssistant.MenuCommands
             try
             {
                 // Prompt for class name with validation
-                string className = Microsoft.VisualBasic.Interaction.InputBox("Enter class name:", "Create Entity Class", "MyEntity");
+                string className = PromptInput("Create Entity Class", "Enter class name:", "MyEntity");
                 if (string.IsNullOrEmpty(className))
                 {
                     DMEEditor.AddLogMessage("Info", "Entity class creation canceled: No class name provided", DateTime.Now, 0, null, Errors.Ok);
@@ -339,7 +361,7 @@ namespace Beep.DeveloperAssistant.MenuCommands
                 }
 
                 // Prompt for namespace with validation
-                string namespaceName = Microsoft.VisualBasic.Interaction.InputBox("Enter namespace:", "Namespace", "MyApp.Entities");
+                string namespaceName = PromptInput("Namespace", "Enter namespace:", "MyApp.Entities");
                 if (string.IsNullOrEmpty(namespaceName))
                 {
                     DMEEditor.AddLogMessage("Info", "Entity class creation canceled: No namespace provided", DateTime.Now, 0, null, Errors.Ok);
@@ -454,7 +476,7 @@ namespace Beep.DeveloperAssistant.MenuCommands
             try
             {
                 // Prompt for DLL name with validation
-                string dllName = Microsoft.VisualBasic.Interaction.InputBox("Enter DLL name:", "Create DLL", "MyClasses");
+                string dllName = PromptInput("Create DLL", "Enter DLL name:", "MyClasses");
                 if (string.IsNullOrEmpty(dllName))
                 {
                     DMEEditor.AddLogMessage("Info", "DLL creation canceled: No DLL name provided", DateTime.Now, 0, null, Errors.Ok);
@@ -462,9 +484,9 @@ namespace Beep.DeveloperAssistant.MenuCommands
                 }
 
                 // Prompt for output directory
-                string outputPath = Microsoft.VisualBasic.Interaction.InputBox(
-                    "Enter output path (leave blank for default):",
+                string outputPath = PromptInput(
                     "Output Path",
+                    "Enter output path (leave blank for default):",
                     DMEEditor.ConfigEditor.Config.ScriptsPath);
 
                 if (string.IsNullOrEmpty(outputPath))
@@ -598,7 +620,7 @@ namespace Beep.DeveloperAssistant.MenuCommands
             try
             {
                 // Prompt for DLL name with validation
-                string dllName = Microsoft.VisualBasic.Interaction.InputBox("Enter DLL name:", "Create DLL from Files", "MyFileClasses");
+                string dllName = PromptInput("Create DLL from Files", "Enter DLL name:", "MyFileClasses");
                 if (string.IsNullOrEmpty(dllName))
                 {
                     DMEEditor.AddLogMessage("Info", "DLL creation canceled: No DLL name provided", DateTime.Now, 0, null, Errors.Ok);
@@ -720,7 +742,7 @@ namespace Beep.DeveloperAssistant.MenuCommands
             try
             {
                 // Prompt for interface name (without 'I' prefix)
-                string className = Microsoft.VisualBasic.Interaction.InputBox("Enter interface name (without 'I'):", "Generate Interface", "MyInterface");
+                string className = PromptInput("Generate Interface", "Enter interface name (without 'I'):", "MyInterface");
                 if (string.IsNullOrEmpty(className))
                 {
                     DMEEditor.AddLogMessage("Info", "Interface generation canceled: No interface name provided", DateTime.Now, 0, null, Errors.Ok);
@@ -728,7 +750,7 @@ namespace Beep.DeveloperAssistant.MenuCommands
                 }
 
                 // Prompt for namespace
-                string namespaceName = Microsoft.VisualBasic.Interaction.InputBox("Enter namespace:", "Namespace", "MyApp.Interfaces");
+                string namespaceName = PromptInput("Namespace", "Enter namespace:", "MyApp.Interfaces");
                 if (string.IsNullOrEmpty(namespaceName))
                 {
                     DMEEditor.AddLogMessage("Info", "Interface generation canceled: No namespace provided", DateTime.Now, 0, null, Errors.Ok);
@@ -821,7 +843,7 @@ namespace Beep.DeveloperAssistant.MenuCommands
             try
             {
                 // Prompt for class name with validation
-                string className = Microsoft.VisualBasic.Interaction.InputBox("Enter class name:", "Generate Partial Class", "MyPartialClass");
+                string className = PromptInput("Generate Partial Class", "Enter class name:", "MyPartialClass");
                 if (string.IsNullOrEmpty(className))
                 {
                     DMEEditor.AddLogMessage("Info", "Partial class generation canceled: No class name provided", DateTime.Now, 0, null, Errors.Ok);
@@ -829,7 +851,7 @@ namespace Beep.DeveloperAssistant.MenuCommands
                 }
 
                 // Prompt for namespace with validation
-                string namespaceName = Microsoft.VisualBasic.Interaction.InputBox("Enter namespace:", "Namespace", "MyApp.Partials");
+                string namespaceName = PromptInput("Namespace", "Enter namespace:", "MyApp.Partials");
                 if (string.IsNullOrEmpty(namespaceName))
                 {
                     DMEEditor.AddLogMessage("Info", "Partial class generation canceled: No namespace provided", DateTime.Now, 0, null, Errors.Ok);
@@ -837,7 +859,7 @@ namespace Beep.DeveloperAssistant.MenuCommands
                 }
 
                 // Prompt for additional methods (optional)
-                string methods = Microsoft.VisualBasic.Interaction.InputBox("Enter additional methods (optional):", "Methods", "public void DoSomething() { }");
+                string methods = PromptInput("Methods", "Enter additional methods (optional):", "public void DoSomething() { }");
 
                 // Optional: select output directory
                 using (OpenFileDialog ofd = new OpenFileDialog
@@ -915,7 +937,7 @@ namespace Beep.DeveloperAssistant.MenuCommands
             try
             {
                 // Prompt for class name with validation
-                string className = Microsoft.VisualBasic.Interaction.InputBox("Enter class name:", "Generate Class with Attributes", "MyAttributedClass");
+                string className = PromptInput("Generate Class with Attributes", "Enter class name:", "MyAttributedClass");
                 if (string.IsNullOrEmpty(className))
                 {
                     DMEEditor.AddLogMessage("Info", "Class with attributes generation canceled: No class name provided", DateTime.Now, 0, null, Errors.Ok);
@@ -923,7 +945,7 @@ namespace Beep.DeveloperAssistant.MenuCommands
                 }
 
                 // Prompt for namespace with validation
-                string namespaceName = Microsoft.VisualBasic.Interaction.InputBox("Enter namespace:", "Namespace", "MyApp.Models");
+                string namespaceName = PromptInput("Namespace", "Enter namespace:", "MyApp.Models");
                 if (string.IsNullOrEmpty(namespaceName))
                 {
                     DMEEditor.AddLogMessage("Info", "Class with attributes generation canceled: No namespace provided", DateTime.Now, 0, null, Errors.Ok);
@@ -993,8 +1015,8 @@ namespace Beep.DeveloperAssistant.MenuCommands
             DMEEditor.ErrorObject.Flag = Errors.Ok;
             try
             {
-                string className = Microsoft.VisualBasic.Interaction.InputBox("Enter class name:", "Merge Partial Class", "MyPartialClass");
-                string namespaceName = Microsoft.VisualBasic.Interaction.InputBox("Enter namespace:", "Namespace", "MyApp.Partials");
+                string className = PromptInput("Merge Partial Class", "Enter class name:", "MyPartialClass");
+                string namespaceName = PromptInput("Namespace", "Enter namespace:", "MyApp.Partials");
                 using (OpenFileDialog ofd = new OpenFileDialog { Filter = "C# files (*.cs)|*.cs", Title = "Select existing class file to merge into" })
                 {
                     if (!string.IsNullOrEmpty(className) && !string.IsNullOrEmpty(namespaceName) && ofd.ShowDialog() == DialogResult.OK)
@@ -1041,8 +1063,8 @@ namespace Beep.DeveloperAssistant.MenuCommands
             DMEEditor.ErrorObject.Flag = Errors.Ok;
             try
             {
-                string className = Microsoft.VisualBasic.Interaction.InputBox("Enter record name:", "Create Record Class", "MyRecord");
-                string namespaceName = Microsoft.VisualBasic.Interaction.InputBox("Enter namespace:", "Namespace", "MyApp.Models");
+                string className = PromptInput("Create Record Class", "Enter record name:", "MyRecord");
+                string namespaceName = PromptInput("Namespace", "Enter namespace:", "MyApp.Models");
                 using (OpenFileDialog ofd = new OpenFileDialog { Filter = "All files (*.*)|*.*", Title = "Select output directory (optional)" })
                 {
                     if (!string.IsNullOrEmpty(className) && !string.IsNullOrEmpty(namespaceName))
@@ -1090,8 +1112,8 @@ namespace Beep.DeveloperAssistant.MenuCommands
             DMEEditor.ErrorObject.Flag = Errors.Ok;
             try
             {
-                string className = Microsoft.VisualBasic.Interaction.InputBox("Enter class name:", "Create Sealed Class", "MySealedClass");
-                string namespaceName = Microsoft.VisualBasic.Interaction.InputBox("Enter namespace:", "Namespace", "MyApp.Models");
+                string className = PromptInput("Create Sealed Class", "Enter class name:", "MySealedClass");
+                string namespaceName = PromptInput("Namespace", "Enter namespace:", "MyApp.Models");
                 using (OpenFileDialog ofd = new OpenFileDialog { Filter = "All files (*.*)|*.*", Title = "Select output directory (optional)" })
                 {
                     if (!string.IsNullOrEmpty(className) && !string.IsNullOrEmpty(namespaceName))
@@ -1139,8 +1161,8 @@ namespace Beep.DeveloperAssistant.MenuCommands
             DMEEditor.ErrorObject.Flag = Errors.Ok;
             try
             {
-                string className = Microsoft.VisualBasic.Interaction.InputBox("Enter class name:", "Create Abstract Class", "MyAbstractClass");
-                string namespaceName = Microsoft.VisualBasic.Interaction.InputBox("Enter namespace:", "Namespace", "MyApp.Models");
+                string className = PromptInput("Create Abstract Class", "Enter class name:", "MyAbstractClass");
+                string namespaceName = PromptInput("Namespace", "Enter namespace:", "MyApp.Models");
                 using (OpenFileDialog ofd = new OpenFileDialog { Filter = "All files (*.*)|*.*", Title = "Select output directory (optional)" })
                 {
                     if (!string.IsNullOrEmpty(className) && !string.IsNullOrEmpty(namespaceName))
@@ -1188,8 +1210,8 @@ namespace Beep.DeveloperAssistant.MenuCommands
             DMEEditor.ErrorObject.Flag = Errors.Ok;
             try
             {
-                string className = Microsoft.VisualBasic.Interaction.InputBox("Enter form name (without 'Form'):", "Generate WinForms Form", "MyForm");
-                string namespaceName = Microsoft.VisualBasic.Interaction.InputBox("Enter namespace:", "Namespace", "MyApp.Forms");
+                string className = PromptInput("Generate WinForms Form", "Enter form name (without 'Form'):", "MyForm");
+                string namespaceName = PromptInput("Namespace", "Enter namespace:", "MyApp.Forms");
                 using (OpenFileDialog ofd = new OpenFileDialog { Filter = "All files (*.*)|*.*", Title = "Select output directory (optional)" })
                 {
                     if (!string.IsNullOrEmpty(className) && !string.IsNullOrEmpty(namespaceName))
@@ -1237,9 +1259,9 @@ namespace Beep.DeveloperAssistant.MenuCommands
             DMEEditor.ErrorObject.Flag = Errors.Ok;
             try
             {
-                string className = Microsoft.VisualBasic.Interaction.InputBox("Enter controller name (without 'Controller'):", "Generate MVC Controller", "MyController");
-                string namespaceName = Microsoft.VisualBasic.Interaction.InputBox("Enter namespace:", "Namespace", "MyApp.Controllers");
-                string modelNamespace = Microsoft.VisualBasic.Interaction.InputBox("Enter model namespace:", "Model Namespace", "MyApp.Models");
+                string className = PromptInput("Generate MVC Controller", "Enter controller name (without 'Controller'):", "MyController");
+                string namespaceName = PromptInput("Namespace", "Enter namespace:", "MyApp.Controllers");
+                string modelNamespace = PromptInput("Model Namespace", "Enter model namespace:", "MyApp.Models");
                 using (OpenFileDialog ofd = new OpenFileDialog { Filter = "All files (*.*)|*.*", Title = "Select output directory (optional)" })
                 {
                     if (!string.IsNullOrEmpty(className) && !string.IsNullOrEmpty(namespaceName) && !string.IsNullOrEmpty(modelNamespace))
@@ -1287,9 +1309,9 @@ namespace Beep.DeveloperAssistant.MenuCommands
             DMEEditor.ErrorObject.Flag = Errors.Ok;
             try
             {
-                string pageName = Microsoft.VisualBasic.Interaction.InputBox("Enter page name:", "Generate Razor Page", "MyPage");
-                string namespaceName = Microsoft.VisualBasic.Interaction.InputBox("Enter namespace:", "Namespace", "MyApp.Pages");
-                string modelNamespace = Microsoft.VisualBasic.Interaction.InputBox("Enter model namespace:", "Model Namespace", "MyApp.Models");
+                string pageName = PromptInput("Generate Razor Page", "Enter page name:", "MyPage");
+                string namespaceName = PromptInput("Namespace", "Enter namespace:", "MyApp.Pages");
+                string modelNamespace = PromptInput("Model Namespace", "Enter model namespace:", "MyApp.Models");
                 using (OpenFileDialog ofd = new OpenFileDialog { Filter = "All files (*.*)|*.*", Title = "Select output directory (optional)" })
                 {
                     if (!string.IsNullOrEmpty(pageName) && !string.IsNullOrEmpty(namespaceName) && !string.IsNullOrEmpty(modelNamespace))
@@ -1338,8 +1360,8 @@ namespace Beep.DeveloperAssistant.MenuCommands
             DMEEditor.ErrorObject.Flag = Errors.Ok;
             try
             {
-                string componentName = Microsoft.VisualBasic.Interaction.InputBox("Enter component name:", "Generate Blazor Component", "MyComponent");
-                string namespaceName = Microsoft.VisualBasic.Interaction.InputBox("Enter namespace:", "Namespace", "MyApp.Components");
+                string componentName = PromptInput("Generate Blazor Component", "Enter component name:", "MyComponent");
+                string namespaceName = PromptInput("Namespace", "Enter namespace:", "MyApp.Components");
                 using (OpenFileDialog ofd = new OpenFileDialog { Filter = "All files (*.*)|*.*", Title = "Select output directory (optional)" })
                 {
                     if (!string.IsNullOrEmpty(componentName) && !string.IsNullOrEmpty(namespaceName))
@@ -1387,7 +1409,7 @@ namespace Beep.DeveloperAssistant.MenuCommands
             DMEEditor.ErrorObject.Flag = Errors.Ok;
             try
             {
-                string solutionName = Microsoft.VisualBasic.Interaction.InputBox("Enter solution name:", "Generate Solution Structure", "MySolution");
+                string solutionName = PromptInput("Generate Solution Structure", "Enter solution name:", "MySolution");
                 using (FolderBrowserDialog fbd = new FolderBrowserDialog { Description = "Select root directory for solution" })
                 {
                     if (!string.IsNullOrEmpty(solutionName) && fbd.ShowDialog() == DialogResult.OK)
@@ -1515,8 +1537,8 @@ namespace Beep.DeveloperAssistant.MenuCommands
                     if (ofd.ShowDialog() == DialogResult.OK)
                     {
                         string pocoCode = File.ReadAllText(ofd.FileName);
-                        string className = Microsoft.VisualBasic.Interaction.InputBox("Enter new class name (optional):", "Convert POCO to Entity", Path.GetFileNameWithoutExtension(ofd.FileName));
-                        string outputPath = Microsoft.VisualBasic.Interaction.InputBox("Enter output directory (leave blank to overwrite):", "Output Path", Path.GetDirectoryName(ofd.FileName));
+                        string className = PromptInput("Convert POCO to Entity", "Enter new class name (optional):", Path.GetFileNameWithoutExtension(ofd.FileName));
+                        string outputPath = PromptInput("Output Path", "Enter output directory (leave blank to overwrite):", Path.GetDirectoryName(ofd.FileName));
 
                         string code = _classCreator.ConvertPOCOClassToEntity(outputPath, pocoCode, className);
                         if (code != null)

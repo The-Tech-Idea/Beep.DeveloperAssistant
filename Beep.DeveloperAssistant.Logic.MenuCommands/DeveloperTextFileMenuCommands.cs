@@ -1,4 +1,4 @@
-﻿using Beep.DeveloperAssistant.Logic;
+using Beep.DeveloperAssistant.Logic;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -46,6 +46,28 @@ namespace Beep.DeveloperAssistant.MenuCommands
         }
         private ITree tree;
         public IFunctionandExtensionsHelpers ExtensionsHelpers { get; set; }
+
+        private string PromptInput(string title, string promptText, string defaultValue = "")
+        {
+            var dialogManager = ExtensionsHelpers?.Vismanager?.DialogManager;
+            if (dialogManager == null)
+            {
+                return defaultValue;
+            }
+
+            var result = dialogManager.InputBoxAsync(title, promptText).GetAwaiter().GetResult();
+            if (result.Result != BeepDialogResult.OK)
+            {
+                return string.Empty;
+            }
+
+            if (string.IsNullOrWhiteSpace(result.Value))
+            {
+                return defaultValue;
+            }
+
+            return result.Value;
+        }
         #region Commands for DeveloperTextFileUtilities
 
         [CommandAttribute(
@@ -106,7 +128,7 @@ namespace Beep.DeveloperAssistant.MenuCommands
                 {
                     if (sfd.ShowDialog() == DialogResult.OK)
                     {
-                        string content = Microsoft.VisualBasic.Interaction.InputBox("Enter text content (separate lines with \\n):", "Write Text File", "Line1\nLine2");
+                        string content = PromptInput("Write Text File", "Enter text content (separate lines with \\n):", "Line1\nLine2");
                         if (!string.IsNullOrEmpty(content))
                         {
                             var lines = content.Split(new[] { "\\n" }, StringSplitOptions.None).ToList();
@@ -233,7 +255,7 @@ namespace Beep.DeveloperAssistant.MenuCommands
                 {
                     if (ofd.ShowDialog() == DialogResult.OK)
                     {
-                        string widthsStr = Microsoft.VisualBasic.Interaction.InputBox("Enter column widths (comma-separated, e.g., 10,20,15):", "Column Widths", "10,20,15");
+                        string widthsStr = PromptInput("Column Widths", "Enter column widths (comma-separated, e.g., 10,20,15):", "10,20,15");
                         if (!string.IsNullOrEmpty(widthsStr))
                         {
                             int[] widths = widthsStr.Split(',').Select(int.Parse).ToArray();
@@ -278,7 +300,7 @@ namespace Beep.DeveloperAssistant.MenuCommands
                 {
                     if (ofd.ShowDialog() == DialogResult.OK && sfd.ShowDialog() == DialogResult.OK)
                     {
-                        string pattern = Microsoft.VisualBasic.Interaction.InputBox("Enter regex pattern to filter lines:", "Filter by Regex", ".*test.*");
+                        string pattern = PromptInput("Filter by Regex", "Enter regex pattern to filter lines:", ".*test.*");
                         if (!string.IsNullOrEmpty(pattern))
                         {
                             var lines = textUtil.ReadAllLines(ofd.FileName);
@@ -326,7 +348,7 @@ namespace Beep.DeveloperAssistant.MenuCommands
                 {
                     if (ofd.ShowDialog() == DialogResult.OK && sfd.ShowDialog() == DialogResult.OK)
                     {
-                        string separator = Microsoft.VisualBasic.Interaction.InputBox("Enter separator between files (leave blank for none):", "Separator", "---");
+                        string separator = PromptInput("Separator", "Enter separator between files (leave blank for none):", "---");
                         bool includeHeaders = MessageBox.Show("Include file names as headers?", "Headers", MessageBoxButtons.YesNo) == DialogResult.Yes;
 
                         bool success = await textUtil.MergeTextFilesAsync(ofd.FileNames, sfd.FileName, separator, includeHeaders);
@@ -448,7 +470,7 @@ namespace Beep.DeveloperAssistant.MenuCommands
                 {
                     if (ofd.ShowDialog() == DialogResult.OK && fbd.ShowDialog() == DialogResult.OK)
                     {
-                        string linesPerFileStr = Microsoft.VisualBasic.Interaction.InputBox("Enter number of lines per file:", "Split by Lines", "1000");
+                        string linesPerFileStr = PromptInput("Split by Lines", "Enter number of lines per file:", "1000");
                         if (int.TryParse(linesPerFileStr, out int linesPerFile) && linesPerFile > 0)
                         {
                             string baseFileName = Path.GetFileNameWithoutExtension(ofd.FileName);

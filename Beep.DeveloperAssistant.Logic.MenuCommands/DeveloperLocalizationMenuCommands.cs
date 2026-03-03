@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -49,6 +49,28 @@ namespace Beep.DeveloperAssistant.MenuCommands
         private ITree tree;
         public IFunctionandExtensionsHelpers ExtensionsHelpers { get; set; }
 
+        private string PromptInput(string title, string promptText, string defaultValue = "")
+        {
+            var dialogManager = ExtensionsHelpers?.Vismanager?.DialogManager;
+            if (dialogManager == null)
+            {
+                return defaultValue;
+            }
+
+            var result = dialogManager.InputBoxAsync(title, promptText).GetAwaiter().GetResult();
+            if (result.Result != BeepDialogResult.OK)
+            {
+                return string.Empty;
+            }
+
+            if (string.IsNullOrWhiteSpace(result.Value))
+            {
+                return defaultValue;
+            }
+
+            return result.Value;
+        }
+
         #region Commands
 
         [CommandAttribute(
@@ -64,7 +86,7 @@ namespace Beep.DeveloperAssistant.MenuCommands
             DMEEditor.ErrorObject.Flag = Errors.Ok;
             try
             {
-                string cultureName = Microsoft.VisualBasic.Interaction.InputBox("Enter culture name (e.g., en-US, fr-FR):", "Set Thread Culture", "en-US");
+                string cultureName = PromptInput("Set Thread Culture", "Enter culture name (e.g., en-US, fr-FR):", "en-US");
                 if (!string.IsNullOrEmpty(cultureName))
                 {
                     _locUtil.SetThreadCulture(cultureName);
@@ -92,8 +114,8 @@ namespace Beep.DeveloperAssistant.MenuCommands
             DMEEditor.ErrorObject.Flag = Errors.Ok;
             try
             {
-                string baseName = Microsoft.VisualBasic.Interaction.InputBox("Enter resource base name (e.g., MyApp.Resources.Strings):", "Get Localized String", "MyApp.Resources.Strings");
-                string resourceKey = Microsoft.VisualBasic.Interaction.InputBox("Enter resource key:", "Resource Key", "Hello");
+                string baseName = PromptInput("Get Localized String", "Enter resource base name (e.g., MyApp.Resources.Strings):", "MyApp.Resources.Strings");
+                string resourceKey = PromptInput("Resource Key", "Enter resource key:", "Hello");
                 if (!string.IsNullOrEmpty(baseName) && !string.IsNullOrEmpty(resourceKey))
                 {
                     string localizedString = await _locUtil.TryGetLocalizedStringWithFallbackAsync(baseName, resourceKey);
@@ -135,8 +157,8 @@ namespace Beep.DeveloperAssistant.MenuCommands
                         var entries = await _locUtil.ReadResxFileAsync(ofd.FileName);
                         if (entries != null)
                         {
-                            string key = Microsoft.VisualBasic.Interaction.InputBox("Enter resource key to add/edit:", "Edit .resx", "");
-                            string value = Microsoft.VisualBasic.Interaction.InputBox("Enter resource value:", "Edit .resx", "");
+                            string key = PromptInput("Edit .resx", "Enter resource key to add/edit:", "");
+                            string value = PromptInput("Edit .resx", "Enter resource value:", "");
                             if (!string.IsNullOrEmpty(key))
                             {
                                 entries[key] = value;
@@ -179,9 +201,9 @@ namespace Beep.DeveloperAssistant.MenuCommands
             DMEEditor.ErrorObject.Flag = Errors.Ok;
             try
             {
-                string baseName = Microsoft.VisualBasic.Interaction.InputBox("Enter resource base name (e.g., MyApp.Resources.Strings):", "Get Pluralized String", "MyApp.Resources.Strings");
-                string resourceKeyPrefix = Microsoft.VisualBasic.Interaction.InputBox("Enter resource key prefix (e.g., ItemCount):", "Resource Key Prefix", "ItemCount");
-                string countStr = Microsoft.VisualBasic.Interaction.InputBox("Enter count:", "Count", "1");
+                string baseName = PromptInput("Get Pluralized String", "Enter resource base name (e.g., MyApp.Resources.Strings):", "MyApp.Resources.Strings");
+                string resourceKeyPrefix = PromptInput("Resource Key Prefix", "Enter resource key prefix (e.g., ItemCount):", "ItemCount");
+                string countStr = PromptInput("Count", "Enter count:", "1");
                 if (!string.IsNullOrEmpty(baseName) && !string.IsNullOrEmpty(resourceKeyPrefix) && int.TryParse(countStr, out int count))
                 {
                     string pluralizedString = _locUtil.GetPluralizedString(baseName, resourceKeyPrefix, count);
@@ -220,7 +242,7 @@ namespace Beep.DeveloperAssistant.MenuCommands
                 {
                     if (ofd.ShowDialog() == DialogResult.OK)
                     {
-                        string cultureName = Microsoft.VisualBasic.Interaction.InputBox("Enter culture name for the assembly (e.g., fr-FR):", "Load Satellite Assembly", "fr-FR");
+                        string cultureName = PromptInput("Load Satellite Assembly", "Enter culture name for the assembly (e.g., fr-FR):", "fr-FR");
                         if (!string.IsNullOrEmpty(cultureName))
                         {
                             bool success = _locUtil.LoadSatelliteAssembly(ofd.FileName, cultureName);
@@ -265,13 +287,13 @@ namespace Beep.DeveloperAssistant.MenuCommands
                 sampleTable.Rows.Add("en-US", "Hello", "Hello, World!");
                 sampleTable.Rows.Add("fr-FR", "Hello", "Bonjour le monde!");
 
-                string cultureName = Microsoft.VisualBasic.Interaction.InputBox("Enter culture name (e.g., en-US):", "Load DB Translations", "en-US");
+                string cultureName = PromptInput("Load DB Translations", "Enter culture name (e.g., en-US):", "en-US");
                 if (!string.IsNullOrEmpty(cultureName))
                 {
                     var translations = _locUtil.LoadDbTranslations(sampleTable, cultureName);
                     if (translations.Count > 0)
                     {
-                        string key = Microsoft.VisualBasic.Interaction.InputBox("Enter resource key to retrieve:", "Get DB Translation", "Hello");
+                        string key = PromptInput("Get DB Translation", "Enter resource key to retrieve:", "Hello");
                         if (!string.IsNullOrEmpty(key))
                         {
                             string value = _locUtil.GetDbLocalizedString(translations, key, "Fallback Value");
@@ -305,7 +327,7 @@ namespace Beep.DeveloperAssistant.MenuCommands
             DMEEditor.ErrorObject.Flag = Errors.Ok;
             try
             {
-                string baseName = Microsoft.VisualBasic.Interaction.InputBox("Enter resource base name (e.g., MyApp.Resources.Strings):", "Localize Form", "MyApp.Resources.Strings");
+                string baseName = PromptInput("Localize Form", "Enter resource base name (e.g., MyApp.Resources.Strings):", "MyApp.Resources.Strings");
                 if (!string.IsNullOrEmpty(baseName))
                 {
                     var form = new Form { Text = "TestForm", Size = new System.Drawing.Size(300, 200) };
@@ -335,8 +357,8 @@ namespace Beep.DeveloperAssistant.MenuCommands
             DMEEditor.ErrorObject.Flag = Errors.Ok;
             try
             {
-                string cultureName = Microsoft.VisualBasic.Interaction.InputBox("Enter culture name (e.g., en-US, leave blank for current):", "Format DateTime", "");
-                string formatString = Microsoft.VisualBasic.Interaction.InputBox("Enter format string (e.g., dddd, MMMM dd, yyyy):", "Format String", "G");
+                string cultureName = PromptInput("Format DateTime", "Enter culture name (e.g., en-US, leave blank for current):", "");
+                string formatString = PromptInput("Format String", "Enter format string (e.g., dddd, MMMM dd, yyyy):", "G");
                 if (!string.IsNullOrEmpty(formatString))
                 {
                     string formattedDate = _locUtil.FormatDateTime(DateTime.Now, cultureName, formatString);

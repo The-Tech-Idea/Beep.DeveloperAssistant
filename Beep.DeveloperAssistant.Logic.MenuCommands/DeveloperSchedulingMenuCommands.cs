@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -51,6 +51,28 @@ namespace Beep.DeveloperAssistant.MenuCommands
         private ITree tree;
         public IFunctionandExtensionsHelpers ExtensionsHelpers { get; set; }
 
+        private string PromptInput(string title, string promptText, string defaultValue = "")
+        {
+            var dialogManager = ExtensionsHelpers?.Vismanager?.DialogManager;
+            if (dialogManager == null)
+            {
+                return defaultValue;
+            }
+
+            var result = dialogManager.InputBoxAsync(title, promptText).GetAwaiter().GetResult();
+            if (result.Result != BeepDialogResult.OK)
+            {
+                return string.Empty;
+            }
+
+            if (string.IsNullOrWhiteSpace(result.Value))
+            {
+                return defaultValue;
+            }
+
+            return result.Value;
+        }
+
         #region Commands for DeveloperSchedulingUtilities
 
         [CommandAttribute(
@@ -66,13 +88,13 @@ namespace Beep.DeveloperAssistant.MenuCommands
             DMEEditor.ErrorObject.Flag = Errors.Ok;
             try
             {
-                string description = Microsoft.VisualBasic.Interaction.InputBox("Enter task description:", "Enqueue Task", "Sample Task");
-                string delayStr = Microsoft.VisualBasic.Interaction.InputBox("Enter delay in seconds (or leave blank for immediate):", "Delay", "5");
-                string priorityStr = Microsoft.VisualBasic.Interaction.InputBox("Enter priority (lower = higher priority):", "Priority", "1");
-                string cronExpr = Microsoft.VisualBasic.Interaction.InputBox("Enter cron expression (e.g., '*/5 * * * * *' for every 5s, leave blank for one-time):", "Cron Expression", "");
-                string groupName = Microsoft.VisualBasic.Interaction.InputBox("Enter group name (optional):", "Group Name", "");
-                string maxRetriesStr = Microsoft.VisualBasic.Interaction.InputBox("Enter max retries (0 for none):", "Max Retries", "0");
-                string timeoutStr = Microsoft.VisualBasic.Interaction.InputBox("Enter timeout in seconds (optional):", "Timeout", "");
+                string description = PromptInput("Enqueue Task", "Enter task description:", "Sample Task");
+                string delayStr = PromptInput("Delay", "Enter delay in seconds (or leave blank for immediate):", "5");
+                string priorityStr = PromptInput("Priority", "Enter priority (lower = higher priority):", "1");
+                string cronExpr = PromptInput("Cron Expression", "Enter cron expression (e.g., '*/5 * * * * *' for every 5s, leave blank for one-time):", "");
+                string groupName = PromptInput("Group Name", "Enter group name (optional):", "");
+                string maxRetriesStr = PromptInput("Max Retries", "Enter max retries (0 for none):", "0");
+                string timeoutStr = PromptInput("Timeout", "Enter timeout in seconds (optional):", "");
 
                 var task = new DeveloperSchedulingUtilities.ScheduledTask
                 {
@@ -161,7 +183,7 @@ namespace Beep.DeveloperAssistant.MenuCommands
             DMEEditor.ErrorObject.Flag = Errors.Ok;
             try
             {
-                string groupName = Microsoft.VisualBasic.Interaction.InputBox("Enter group name (leave blank for all tasks):", "List Tasks", "");
+                string groupName = PromptInput("List Tasks", "Enter group name (leave blank for all tasks):", "");
                 var tasks = _scheduler.ListScheduledTasks(groupName);
                 if (tasks.Any())
                 {
@@ -195,7 +217,7 @@ namespace Beep.DeveloperAssistant.MenuCommands
             DMEEditor.ErrorObject.Flag = Errors.Ok;
             try
             {
-                string taskIdStr = Microsoft.VisualBasic.Interaction.InputBox("Enter task ID to remove:", "Remove Task", "");
+                string taskIdStr = PromptInput("Remove Task", "Enter task ID to remove:", "");
                 if (Guid.TryParse(taskIdStr, out Guid taskId))
                 {
                     bool success = _scheduler.RemoveTask(taskId);
@@ -234,12 +256,12 @@ namespace Beep.DeveloperAssistant.MenuCommands
             DMEEditor.ErrorObject.Flag = Errors.Ok;
             try
             {
-                string taskIdStr = Microsoft.VisualBasic.Interaction.InputBox("Enter task ID to update:", "Update Task", "");
+                string taskIdStr = PromptInput("Update Task", "Enter task ID to update:", "");
                 if (Guid.TryParse(taskIdStr, out Guid taskId))
                 {
-                    string delayStr = Microsoft.VisualBasic.Interaction.InputBox("Enter new delay in seconds (optional):", "Delay", "");
-                    string priorityStr = Microsoft.VisualBasic.Interaction.InputBox("Enter new priority (optional):", "Priority", "");
-                    string cronExpr = Microsoft.VisualBasic.Interaction.InputBox("Enter new cron expression (optional, e.g., '*/5 * * * * *'):", "Cron Expression", "");
+                    string delayStr = PromptInput("Delay", "Enter new delay in seconds (optional):", "");
+                    string priorityStr = PromptInput("Priority", "Enter new priority (optional):", "");
+                    string cronExpr = PromptInput("Cron Expression", "Enter new cron expression (optional, e.g., '*/5 * * * * *'):", "");
 
                     bool success = _scheduler.UpdateTask(
                         taskId,
@@ -283,7 +305,7 @@ namespace Beep.DeveloperAssistant.MenuCommands
             DMEEditor.ErrorObject.Flag = Errors.Ok;
             try
             {
-                string taskIdStr = Microsoft.VisualBasic.Interaction.InputBox("Enter task ID to view status:", "Task Status", "");
+                string taskIdStr = PromptInput("Task Status", "Enter task ID to view status:", "");
                 if (Guid.TryParse(taskIdStr, out Guid taskId))
                 {
                     var status = _scheduler.GetTaskStatus(taskId);

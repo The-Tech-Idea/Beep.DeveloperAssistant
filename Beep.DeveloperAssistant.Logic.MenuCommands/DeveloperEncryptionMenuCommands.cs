@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -45,6 +45,28 @@ namespace Beep.DeveloperAssistant.MenuCommands
         private ITree tree;
         public IFunctionandExtensionsHelpers ExtensionsHelpers { get; set; }
 
+        private string PromptInput(string title, string promptText, string defaultValue = "")
+        {
+            var dialogManager = ExtensionsHelpers?.Vismanager?.DialogManager;
+            if (dialogManager == null)
+            {
+                return defaultValue;
+            }
+
+            var result = dialogManager.InputBoxAsync(title, promptText).GetAwaiter().GetResult();
+            if (result.Result != BeepDialogResult.OK)
+            {
+                return string.Empty;
+            }
+
+            if (string.IsNullOrWhiteSpace(result.Value))
+            {
+                return defaultValue;
+            }
+
+            return result.Value;
+        }
+
         #region Commands for DeveloperEncryptionUtilities
 
         [CommandAttribute(
@@ -62,7 +84,7 @@ namespace Beep.DeveloperAssistant.MenuCommands
             {
                 DeveloperEncryptionUtilities encryptionUtil = new DeveloperEncryptionUtilities(DMEEditor);
 
-                string input = Microsoft.VisualBasic.Interaction.InputBox("Enter text to hash with SHA256:", "SHA256 Hash", "");
+                string input = PromptInput("SHA256 Hash", "Enter text to hash with SHA256:", "");
                 if (!string.IsNullOrEmpty(input))
                 {
                     string hash = encryptionUtil.ComputeSha256Hash(input);
@@ -99,8 +121,8 @@ namespace Beep.DeveloperAssistant.MenuCommands
             {
                 DeveloperEncryptionUtilities encryptionUtil = new DeveloperEncryptionUtilities(DMEEditor);
 
-                string message = Microsoft.VisualBasic.Interaction.InputBox("Enter message for HMAC-SHA256:", "HMAC-SHA256", "");
-                string keyInput = Microsoft.VisualBasic.Interaction.InputBox("Enter HMAC key (at least 16 characters):", "HMAC Key", "mysecretkey123456");
+                string message = PromptInput("HMAC-SHA256", "Enter message for HMAC-SHA256:", "");
+                string keyInput = PromptInput("HMAC Key", "Enter HMAC key (at least 16 characters):", "mysecretkey123456");
                 if (!string.IsNullOrEmpty(message) && !string.IsNullOrEmpty(keyInput))
                 {
                     byte[] key = Encoding.UTF8.GetBytes(keyInput);
@@ -138,8 +160,8 @@ namespace Beep.DeveloperAssistant.MenuCommands
             {
                 DeveloperEncryptionUtilities encryptionUtil = new DeveloperEncryptionUtilities(DMEEditor);
 
-                string password = Microsoft.VisualBasic.Interaction.InputBox("Enter password:", "PBKDF2 Key Derivation", "");
-                string saltInput = Microsoft.VisualBasic.Interaction.InputBox("Enter salt (at least 8 characters):", "Salt", "mysalt123");
+                string password = PromptInput("PBKDF2 Key Derivation", "Enter password:", "");
+                string saltInput = PromptInput("Salt", "Enter salt (at least 8 characters):", "mysalt123");
                 if (!string.IsNullOrEmpty(password) && !string.IsNullOrEmpty(saltInput))
                 {
                     byte[] salt = Encoding.UTF8.GetBytes(saltInput);
@@ -178,7 +200,7 @@ namespace Beep.DeveloperAssistant.MenuCommands
             {
                 DeveloperEncryptionUtilities encryptionUtil = new DeveloperEncryptionUtilities(DMEEditor);
 
-                string plainText = Microsoft.VisualBasic.Interaction.InputBox("Enter text to encrypt:", "AES-CBC Encryption", "");
+                string plainText = PromptInput("AES-CBC Encryption", "Enter text to encrypt:", "");
                 if (!string.IsNullOrEmpty(plainText))
                 {
                     // Dummy key and IV for demonstration (32 bytes key, 16 bytes IV)
@@ -219,7 +241,7 @@ namespace Beep.DeveloperAssistant.MenuCommands
             {
                 DeveloperEncryptionUtilities encryptionUtil = new DeveloperEncryptionUtilities(DMEEditor);
 
-                string cipherText = Microsoft.VisualBasic.Interaction.InputBox("Enter encrypted text (Base64):", "AES-CBC Decryption", "");
+                string cipherText = PromptInput("AES-CBC Decryption", "Enter encrypted text (Base64):", "");
                 if (!string.IsNullOrEmpty(cipherText))
                 {
                     // Dummy key and IV (must match encryption)
@@ -346,7 +368,7 @@ namespace Beep.DeveloperAssistant.MenuCommands
             {
                 DeveloperEncryptionUtilities encryptionUtil = new DeveloperEncryptionUtilities(DMEEditor);
 
-                string keySizeStr = Microsoft.VisualBasic.Interaction.InputBox("Enter RSA key size (e.g., 2048):", "RSA Key Pair Generation", "2048");
+                string keySizeStr = PromptInput("RSA Key Pair Generation", "Enter RSA key size (e.g., 2048):", "2048");
                 if (int.TryParse(keySizeStr, out int keySize) && keySize >= 1024)
                 {
                     var (publicKey, privateKey) = encryptionUtil.GenerateRsaKeyPair(keySize);
@@ -395,7 +417,7 @@ namespace Beep.DeveloperAssistant.MenuCommands
             {
                 DeveloperEncryptionUtilities encryptionUtil = new DeveloperEncryptionUtilities(DMEEditor);
 
-                string plainText = Microsoft.VisualBasic.Interaction.InputBox("Enter text to encrypt with RSA:", "RSA Encryption", "");
+                string plainText = PromptInput("RSA Encryption", "Enter text to encrypt with RSA:", "");
                 if (!string.IsNullOrEmpty(plainText))
                 {
                     using (OpenFileDialog ofd = new OpenFileDialog { Filter = "XML files (*.xml)|*.xml", Title = "Select RSA public key file" })
@@ -439,7 +461,7 @@ namespace Beep.DeveloperAssistant.MenuCommands
             {
                 DeveloperEncryptionUtilities encryptionUtil = new DeveloperEncryptionUtilities(DMEEditor);
 
-                string cipherText = Microsoft.VisualBasic.Interaction.InputBox("Enter encrypted text (Base64):", "RSA Decryption", "");
+                string cipherText = PromptInput("RSA Decryption", "Enter encrypted text (Base64):", "");
                 if (!string.IsNullOrEmpty(cipherText))
                 {
                     using (OpenFileDialog ofd = new OpenFileDialog { Filter = "XML files (*.xml)|*.xml", Title = "Select RSA private key file" })
