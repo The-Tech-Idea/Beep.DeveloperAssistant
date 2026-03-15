@@ -49,9 +49,9 @@
 
   <ItemGroup>
     <PackageReference Include="Cronos" Version="0.11.1" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.0.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="5.0.0" />
-    <PackageReference Include="TheTechIdea.Beep.DataManagementModels" Version="2.0.136" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.3.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="5.3.0" />
+    <PackageReference Include="TheTechIdea.Beep.DataManagementModels" Version="2.0.138" />
     <PackageReference Include="TheTechIdea.Beep.Vis.Modules" Version="2.0.38" />
   </ItemGroup>
 
