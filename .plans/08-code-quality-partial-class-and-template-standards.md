@@ -21,3 +21,23 @@ For large classes, split by concern:
 - `*.Validation.cs`
 - `*.Diagnostics.cs`
 - `*.UiBindings.cs`
+
+## Target Files
+
+- `Beep.DeveloperAssistant.Logic/DeveloperClassCreatorUtilities.cs`
+- high-volume classes in MenuCommands and WinformCore
+- related model/template files under `Beep.DeveloperAssistant.Logic.Models`
+
+## Execution TODOs
+
+- [ ] Define partial-class threshold rule (e.g., >600 lines or >20 public methods).
+- [ ] Create `Partialization-Backlog.md` with top 10 classes to split.
+- [ ] Apply partial split to `DeveloperClassCreatorUtilities` (tracked in `05b`).
+- [ ] Standardize template placeholders and naming across generation methods.
+- [ ] Add style checklist for comments/docs/error messages in generated code methods.
+
+## Verification Criteria
+
+- [ ] Target bloated classes are split by concern with no behavior regressions.
+- [ ] Template naming and placeholders are consistent across generation features.
+- [ ] New enhancements follow partial-class pattern by default.

@@ -49,3 +49,24 @@ Integrate BeepDM `ClassCreator` capabilities into `Beep.DeveloperAssistant.Logic
 - `DeveloperClassCreatorUtilities` is the primary façade and should expose concern-based methods that internally route to the correct `ClassCreator` partial.
 - Conversion utilities should not call database/webapi/testing generators directly; keep conversion and generation concerns separated.
 - UI/menu/nodes must call utility façade methods, not `ClassCreator` partials directly.
+
+## Execution TODOs
+
+- [ ] Build `ClassCreator-Method-Mapping.md`:
+  - utility method
+  - exact Tool method
+  - migration status
+  - compatibility risk
+- [ ] Implement adapter wrappers in `DeveloperClassCreatorUtilities` for missing Tool surfaces.
+- [ ] Mark each utility method as:
+  - `Direct Tool call`
+  - `Wrapper with pre/post processing`
+  - `No Tool equivalent (deferred)`
+- [ ] Add compatibility wrappers for existing MenuCommands call sites.
+- [ ] Update matrix when each cluster is migrated (Core/Database/WebApi/Testing/Advanced/Dll/EntityExtensions/PocoToEntity).
+
+## Verification Criteria
+
+- [ ] Every high-traffic utility method has a mapped Tool backend or explicit deferment.
+- [ ] No direct Tool partial calls from Winform/MenuCommands/Nodes.
+- [ ] Mapping doc is complete and referenced in `05b`.

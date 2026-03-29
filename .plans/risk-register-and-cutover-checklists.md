@@ -19,3 +19,26 @@
 - UI workflows include validation + preview + progress/cancel.
 - MenuCommands and Nodes coverage map completed.
 - Compatibility verification completed before deprecation.
+
+## Risk Mitigation TODOs
+
+- [ ] Add risk owner and review cadence for each risk.
+- [ ] Add probability and detection method columns.
+- [ ] Add trigger signals for each risk (what indicates risk is occurring).
+- [ ] Add contingency steps with rollback commands/actions.
+- [ ] Review and update risk register at each rollout stage gate.
+
+## Cutover Execution Checklist (Detailed)
+
+- [ ] Pre-cutover:
+  - [ ] test matrix green
+  - [ ] dry-run validation complete
+  - [ ] feature flags prepared
+- [ ] Cutover:
+  - [ ] enable target feature flags
+  - [ ] validate menu/node/winform key paths
+  - [ ] monitor diagnostics for regression signals
+- [ ] Post-cutover:
+  - [ ] collect issues and classify severity
+  - [ ] execute rollback if critical failure threshold exceeded
+  - [ ] finalize adoption note and update standards matrix

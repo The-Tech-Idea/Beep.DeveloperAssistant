@@ -23,3 +23,21 @@ Baseline current `Beep.DeveloperAssistant` capabilities and define phased enhanc
 - `Beep.DeveloperAssistant.Nodes/*`
 - `BeepDM/DataManagementEngineStandard/Tools/ClassCreator*.cs`
 - `BeepDM/.cursor/* universal helper/environmentservice skill guidance`
+
+## Execution Backlog (Concrete)
+
+- [ ] Build `Phase-Backlog-Index.md` listing all numbered phases and current completion percentage.
+- [ ] Add owner + target branch + target milestone fields for each phase doc.
+- [ ] Add dependency graph section (blocking phase vs blocked phases).
+- [ ] Add status legend used by all plan docs:
+  - `Not Started`
+  - `In Progress`
+  - `Blocked`
+  - `Done`
+- [ ] Link this overview to `05b`, `06a`, `07a`, `07b`, `07c` as implementation-critical plans.
+
+## Verification Criteria
+
+- [ ] Every phase document includes TODO checklist + target files + verification criteria.
+- [ ] Every cross-phase dependency is explicit (no implied dependencies).
+- [ ] Overview matches current execution order in `README.md`.

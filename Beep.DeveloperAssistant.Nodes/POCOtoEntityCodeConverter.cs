@@ -1,4 +1,4 @@
-﻿
+
 using TheTechIdea.Beep;
 using TheTechIdea.Beep.Addin;
 using TheTechIdea.Beep.ConfigUtil;
@@ -6,6 +6,7 @@ using TheTechIdea.Beep.DataBase;
 using TheTechIdea.Beep.Editor;
 using TheTechIdea.Beep.Vis;
 using TheTechIdea.Beep.Vis.Modules;
+using Beep.DeveloperAssistant.MenuCommands;
 
 
 
@@ -15,9 +16,16 @@ namespace Beep.DeveloperAssistant.Nodes
    
     public class POCOtoEntityCodeConverter : IBranch
     {
+        private const string OpenAction = "openPocotoEntity";
+        private const string ConvertAction = "ConvertPOCOToEntityCmd";
+
         public POCOtoEntityCodeConverter()
         {
-
+            BranchActions = new List<string>
+            {
+                OpenAction,
+                ConvertAction
+            };
         }
         public string MenuID { get; set; }
         public bool Visible { get; set; } = true;
@@ -63,12 +71,27 @@ namespace Beep.DeveloperAssistant.Nodes
 
         public IErrorsInfo ExecuteBranchAction(string ActionName)
         {
+            if (string.IsNullOrWhiteSpace(ActionName))
+            {
+                return DMEEditor?.ErrorObject;
+            }
+
+            if (ActionName.Equals(OpenAction, StringComparison.OrdinalIgnoreCase))
+            {
+                return openPocotoEntity();
+            }
+
+            if (ActionName.Equals(ConvertAction, StringComparison.OrdinalIgnoreCase))
+            {
+                return ExecuteConvertPocoToEntity();
+            }
+
             return DMEEditor.ErrorObject;
         }
 
         public IErrorsInfo MenuItemClicked(string ActionNam)
         {
-            return DMEEditor.ErrorObject;
+            return ExecuteBranchAction(ActionNam);
         }
 
         public IErrorsInfo RemoveChildNodes()
@@ -102,7 +125,14 @@ namespace Beep.DeveloperAssistant.Nodes
             try
             {
                 Console.WriteLine("Trying Open");
-                Visutil.ShowPage("uc_CodeConverter", (PassedArgs)DMEEditor.Passedarguments, DisplayType.InControl);
+                if (Visutil != null)
+                {
+                    Visutil.ShowPage("uc_CodeConverter", (PassedArgs)DMEEditor.Passedarguments, DisplayType.InControl);
+                }
+                else
+                {
+                    DMEEditor.AddLogMessage("Beep IDE", "Could not open POCO converter page. App manager is not configured.", DateTime.Now, -1, null, Errors.Failed);
+                }
 
                 //   DMEEditor.AddLogMessage("Success", "Added Database Connection", DateTime.Now, 0,null, Errors.Failed);
             }
@@ -112,6 +142,28 @@ namespace Beep.DeveloperAssistant.Nodes
                 //string mes = "Could not Add Database Connection";
                 DMEEditor.AddLogMessage("Beep IDE", ex.Message, DateTime.Now, -1, null, Errors.Failed);
             };
+            return DMEEditor.ErrorObject;
+        }
+
+        private IErrorsInfo ExecuteConvertPocoToEntity()
+        {
+            try
+            {
+                if (Visutil == null)
+                {
+                    DMEEditor.AddLogMessage("Beep IDE", "Convert POCO to Entity command is unavailable. App manager is not configured.", DateTime.Now, -1, null, Errors.Failed);
+                    return DMEEditor.ErrorObject;
+                }
+
+                var menuCommand = new DeveloperClassCreatorMenuCommands(Visutil);
+                var args = DMEEditor?.Passedarguments as IPassedArgs;
+                menuCommand.ConvertPOCOToEntityCmd(args).GetAwaiter().GetResult();
+            }
+            catch (Exception ex)
+            {
+                DMEEditor.AddLogMessage("Beep IDE", $"Error routing ConvertPOCOToEntityCmd: {ex.Message}", DateTime.Now, -1, null, Errors.Failed);
+            }
+
             return DMEEditor.ErrorObject;
         }
     }
