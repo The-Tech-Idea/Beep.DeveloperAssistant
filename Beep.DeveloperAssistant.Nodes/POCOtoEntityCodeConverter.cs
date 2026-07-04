@@ -157,7 +157,7 @@ namespace Beep.DeveloperAssistant.Nodes
 
                 var menuCommand = new DeveloperClassCreatorMenuCommands(Visutil);
                 var args = DMEEditor?.Passedarguments as IPassedArgs;
-                menuCommand.ConvertPOCOToEntityCmd(args).GetAwaiter().GetResult();
+                menuCommand.ConvertPOCOToEntityCmd(args);
             }
             catch (Exception ex)
             {

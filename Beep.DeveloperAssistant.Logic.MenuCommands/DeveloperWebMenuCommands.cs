@@ -59,7 +59,7 @@ namespace Beep.DeveloperAssistantMenuCommands
                 return defaultValue;
             }
 
-            var result = dialogManager.InputBoxAsync(title, promptText).GetAwaiter().GetResult();
+            var result = dialogManager.InputBox(title, promptText);
             if (result.Result != BeepDialogResult.OK)
             {
                 return string.Empty;
